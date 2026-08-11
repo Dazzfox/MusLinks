@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions générales d'utilisation — MusLinks{% endblock %}
+{% block description %}Conditions générales d'utilisation de MusLinks : règles d'accès, inscription, responsabilités et droits des utilisateurs.{% endblock %}
+
+{% block body %}
+
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-16 px-4 text-center">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-cgu'} %}
+    <h1 class="relative font-serif text-4xl font-bold text-white mb-3">Conditions générales d'utilisation</h1>
+    <p class="text-white/80">Règles d'utilisation du service MusLinks.</p>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 space-y-8">
+
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-sm text-emerald-800">
+        En accédant à MusLinks et en utilisant ses services, vous acceptez sans réserve les présentes conditions générales d'utilisation. Dernière mise à jour : {{ "now"|date("d/m/Y") }}.
+    </div>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">1. Objet</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks est un annuaire en ligne de professionnels vérifiés. La plateforme permet aux particuliers de trouver des professionnels de confiance et aux professionnels d'être référencés en ligne après vérification de leur numéro SIRET.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">2. Accès au service</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            L'accès à l'annuaire est libre et gratuit pour les particuliers. L'inscription en tant que professionnel est soumise aux conditions décrites à l'article 4. MusLinks se réserve le droit de suspendre l'accès au service pour maintenance ou en cas de force majeure.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">3. Utilisation du service</h2>
+        <p class="text-sm text-slate-600 leading-relaxed mb-3">L'utilisateur s'engage à :</p>
+        <ul class="space-y-2 text-sm text-slate-600">
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Utiliser le service conformément aux lois françaises en vigueur</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Ne pas publier de contenus faux, diffamatoires ou trompeurs</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Ne pas tenter d'accéder à des zones réservées sans autorisation</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Ne pas utiliser de systèmes automatisés (bots, scrapers) sans accord préalable</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Ne pas nuire au bon fonctionnement du service</li>
+        </ul>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">4. Inscription professionnelle</h2>
+        <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            Pour être référencé sur MusLinks, le professionnel doit :
+        </p>
+        <ul class="space-y-2 text-sm text-slate-600 mb-4">
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Fournir un numéro SIRET valide et actif, vérifié automatiquement via le registre national</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Confirmer son adresse email via le lien de vérification envoyé à l'inscription</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Renseigner des informations exactes et à jour</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Accepter que MusLinks vérifie et modère les informations fournies</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">✓</span> Notifier MusLinks de tout changement substantiel (cessation d'activité, changement de coordonnées)</li>
+        </ul>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm text-emerald-800">
+            L'inscription et l'hébergement de la fiche sont <strong>100% gratuits</strong>, sans abonnement ni engagement. Le service est financé par les dons volontaires de la communauté.
+        </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">5. Dons et soutien communautaire</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks propose à ses utilisateurs et professionnels de soutenir librement la plateforme via un don volontaire. Ces dons, traités de manière sécurisée via Stripe, permettent de couvrir les frais d'hébergement et de maintenance. Aucun don n'est obligatoire et son absence n'entraîne aucune restriction d'accès au service. Les dons ne sont pas remboursables sauf en cas d'erreur manifeste.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">6. Avis et notations</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            Les avis laissés sur les fiches professionnelles doivent être sincères, basés sur une expérience réelle, et respectueux. MusLinks se réserve le droit de supprimer tout avis contraire à ces règles ou manifestement abusif, sans préavis.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">7. Suspension et résiliation</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks se réserve le droit de suspendre ou supprimer toute fiche professionnelle en cas de violation des présentes CGU, d'informations erronées, de signalements répétés ou de cessation d'activité du professionnel concerné. Le professionnel peut demander la suppression de sa fiche à tout moment en nous contactant.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">8. Responsabilité</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks joue un rôle d'intermédiaire et de mise en relation. Nous ne sommes pas partie aux contrats conclus entre les professionnels référencés et leurs clients. La responsabilité de MusLinks ne saurait être engagée en cas de litige entre un professionnel et un particulier.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">9. Modification des CGU</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs et professionnels inscrits seront informés des modifications substantielles. La poursuite de l'utilisation du service vaut acceptation des CGU modifiées.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">10. Contact</h2>
+        <p class="text-sm text-slate-600">
+            Pour toute question relative aux présentes CGU : <a href="mailto:contact@muslinks.fr" class="text-emerald-600 hover:text-emerald-800 font-medium">contact@muslinks.fr</a>
+        </p>
+    </section>
+
+</div>
+
+{% endblock %}

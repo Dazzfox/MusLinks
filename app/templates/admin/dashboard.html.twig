@@ -1,0 +1,376 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin — MusLinks{% endblock %}
+
+{% block body %}
+
+<div class="bg-emerald-900 text-white px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div>
+            <h1 class="font-serif text-2xl font-bold">Tableau de bord</h1>
+            <p class="text-emerald-300 text-sm">Administration MusLinks</p>
+        </div>
+        <form method="POST" action="{{ path('admin_logout') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('logout') }}">
+            <button type="submit" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-xl transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Déconnexion
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    {# ── STAT CARDS ── #}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-indigo-500">
+            <div class="font-serif text-3xl font-bold text-indigo-700">{{ stats.en_attente }}</div>
+            <div class="text-slate-500 text-sm mt-1">En attente</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-emerald-500">
+            <div class="font-serif text-3xl font-bold text-emerald-700">{{ stats.actif }}</div>
+            <div class="text-slate-500 text-sm mt-1">Actifs</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-yellow-500">
+            <div class="font-serif text-3xl font-bold text-yellow-700">{{ stats.renouvellement }}</div>
+            <div class="text-slate-500 text-sm mt-1">Renouvellements</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-red-400">
+            <div class="font-serif text-3xl font-bold text-red-700">{{ stats.radie_mois }}</div>
+            <div class="text-slate-500 text-sm mt-1">Radiés ce mois</div>
+        </div>
+    </div>
+
+    {# ── ONGLETS ── #}
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div class="border-b border-slate-100 overflow-x-auto">
+            <div class="flex">
+                {% for tab in [
+                    {id: 'en_attente', label: 'En attente', count: stats.en_attente, color: 'indigo'},
+                    {id: 'actifs', label: 'Actifs', count: stats.actif, color: 'emerald'},
+                    {id: 'renouvellements', label: 'Renouvellements', count: stats.renouvellement, color: 'yellow'},
+                    {id: 'avis', label: 'Avis', count: avis_pending|length, color: 'orange'},
+                    {id: 'radies', label: 'Radiés', count: radies|length, color: 'red'},
+                ] %}
+                    <button onclick="showTab('{{ tab.id }}')"
+                            id="tab-btn-{{ tab.id }}"
+                            class="tab-btn flex items-center gap-2 px-5 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
+                                   {{ active_tab == tab.id ? 'border-emerald-600 text-emerald-700 bg-emerald-50' : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50' }}">
+                        {{ tab.label }}
+                        {% if tab.count > 0 %}
+                            <span class="bg-{{ tab.color }}-100 text-{{ tab.color }}-800 text-xs font-medium px-2 py-0.5 rounded-full">{{ tab.count }}</span>
+                        {% endif %}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# ── EN ATTENTE ── #}
+        <div id="tab-en_attente" class="tab-content {{ active_tab != 'en_attente' ? 'hidden' : '' }}">
+            {% if en_attente is empty %}
+                <div class="text-center py-16 text-slate-400">
+                    <div class="text-4xl mb-3">✓</div>
+                    <p>Aucune inscription en attente.</p>
+                </div>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-left px-5 py-3 text-slate-500 font-medium">Société</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">Profession</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden lg:table-cell">Ville</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden lg:table-cell">Formule</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">SIRET</th>
+                                <th class="px-4 py-3 text-slate-500 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for pro in en_attente %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <span title="{{ pro.isEcommerce() ? 'Boutique en ligne' : 'Commerce physique' }}">
+                                                {{ pro.isEcommerce() ? '🛒' : '🏪' }}
+                                            </span>
+                                            <div>
+                                                <div class="font-medium text-slate-800">{{ pro.nomSociete }}</div>
+                                                {% if not pro.isEcommerce() %}
+                                                    <div class="text-xs text-slate-400">{{ pro.prenomResponsable }} {{ pro.nomResponsable }}</div>
+                                                {% endif %}
+                                                <div class="text-xs text-slate-400">{{ pro.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 hidden md:table-cell text-slate-600">{{ pro.profession ?? pro.domaineActivite }}</td>
+                                    <td class="px-4 py-4 hidden lg:table-cell text-slate-600">{{ pro.ville ?? '— En ligne —' }} {{ pro.codePostal }}</td>
+                                    <td class="px-4 py-4 hidden md:table-cell font-mono text-xs text-slate-500">
+                                        {% if pro.isEcommerce() %}
+                                            {% if pro.siteEcommerce %}
+                                                <a href="{{ pro.siteEcommerce }}" target="_blank" class="text-indigo-500 hover:underline truncate block max-w-[150px]">
+                                                    {{ pro.siteEcommerce|replace({'https://': '', 'http://': ''}) }}
+                                                </a>
+                                            {% else %}—{% endif %}
+                                        {% else %}
+                                            {{ pro.getSiretFormatted() ?: '—' }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex gap-2">
+                                            <a href="{{ path('app_professional_show', {id: pro.id}) }}"
+                                               target="_blank" class="text-slate-400 hover:text-slate-700 p-1" title="Voir">👁️</a>
+                                            <form method="POST" action="{{ path('admin_valider', {id: pro.id}) }}" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                                                    {{ pro.isEcommerce() ? 'Activer' : 'Valider' }}
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ path('admin_refuser', {id: pro.id}) }}" class="inline" onsubmit="return confirm('Refuser cette inscription ?')">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                                                    Refuser
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── ACTIFS ── #}
+        <div id="tab-actifs" class="tab-content {{ active_tab != 'actifs' ? 'hidden' : '' }}">
+            {% if actifs is empty %}
+                <div class="text-center py-16 text-slate-400"><p>Aucun professionnel actif.</p></div>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-left px-5 py-3 text-slate-500 font-medium">Société</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">Profession</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden lg:table-cell">Inscrit le</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden lg:table-cell">Note</th>
+                                <th class="px-4 py-3 text-slate-500 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for pro in actifs %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <span title="{{ pro.isEcommerce() ? 'Boutique en ligne' : 'Commerce physique' }}">
+                                                {{ pro.isEcommerce() ? '🛒' : '🏪' }}
+                                            </span>
+                                            <div>
+                                                <div class="font-medium text-slate-800">{{ pro.nomSociete }}</div>
+                                                <div class="text-xs text-slate-400">{{ pro.ville ?? '— En ligne —' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 hidden md:table-cell text-slate-600">{{ pro.profession ?? pro.domaineActivite }}</td>
+                                    <td class="px-4 py-4 hidden lg:table-cell text-slate-600 text-xs">
+                                        {{ pro.dateInscription ? pro.dateInscription|date('d/m/Y') : '—' }}
+                                    </td>
+                                    <td class="px-4 py-4 hidden lg:table-cell">
+                                        <span class="text-emerald-700 font-semibold">{{ pro.starsAverage|number_format(1) }}★</span>
+                                        <span class="text-xs text-slate-400">({{ pro.totalAvis }})</span>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex gap-2">
+                                            <a href="{{ path('app_professional_show', {id: pro.id}) }}" target="_blank" class="text-slate-400 hover:text-slate-700 p-1">👁️</a>
+                                            <form method="POST" action="{{ path('admin_refuser', {id: pro.id}) }}" class="inline" onsubmit="return confirm('Désactiver ce professionnel ?')">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Désactiver
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ path('admin_supprimer', {id: pro.id}) }}" class="inline" onsubmit="return confirm('SUPPRIMER définitivement ?')">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── RENOUVELLEMENTS ── #}
+        <div id="tab-renouvellements" class="tab-content {{ active_tab != 'renouvellements' ? 'hidden' : '' }}">
+            {% if renouvellements is empty %}
+                <div class="text-center py-16 text-slate-400"><p>Aucun renouvellement en cours.</p></div>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-left px-5 py-3 text-slate-500 font-medium">Société</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">Formule</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">Expiration</th>
+                                <th class="px-4 py-3 text-slate-500 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for pro in renouvellements %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-5 py-4">
+                                        <div class="font-medium text-slate-800">{{ pro.nomSociete }}</div>
+                                        <div class="text-xs text-slate-400">{{ pro.email }}</div>
+                                    </td>
+                                    <td class="px-4 py-4 hidden md:table-cell text-slate-400 text-xs">
+                                        —
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <form method="POST" action="{{ path('admin_renouveler', {id: pro.id}) }}" class="inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                            <button type="submit" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                Renouveler +1 an
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── AVIS ── #}
+        <div id="tab-avis" class="tab-content {{ active_tab != 'avis' ? 'hidden' : '' }}">
+            {% if avis_pending is empty %}
+                <div class="text-center py-16 text-slate-400">
+                    <div class="text-4xl mb-3">✓</div>
+                    <p>Aucun avis en attente de modération.</p>
+                </div>
+            {% else %}
+                <div class="divide-y divide-slate-100">
+                    {% for avis in avis_pending %}
+                        <div class="p-5 hover:bg-slate-50">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-medium text-slate-800 text-sm">{{ avis.auteur }}</span>
+                                        <span class="text-xs text-slate-400">{{ avis.createdAt|date('d/m/Y') }}</span>
+                                        <div class="flex">
+                                            {% for i in 1..5 %}
+                                                <span class="{{ i <= avis.note ? 'text-emerald-600' : 'text-slate-200' }}">★</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-slate-600 mb-1">{{ avis.commentaire }}</p>
+                                    <p class="text-xs text-slate-400">
+                                        Pour :
+                                        <a href="{{ path('app_professional_show', {id: avis.professional.id}) }}"
+                                           target="_blank"
+                                           class="text-emerald-600 hover:text-emerald-800">
+                                            {{ avis.professional.nomSociete }}
+                                        </a>
+                                    </p>
+                                </div>
+                                <div class="flex gap-2 flex-shrink-0">
+                                    <form method="POST" action="{{ path('admin_approuver_avis', {id: avis.id}) }}" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                        <button type="submit" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                            Approuver
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ path('admin_supprimer_avis', {id: avis.id}) }}" class="inline" onsubmit="return confirm('Supprimer cet avis ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                        <button type="submit" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        {# ── RADIÉS ── #}
+        <div id="tab-radies" class="tab-content {{ active_tab != 'radies' ? 'hidden' : '' }}">
+            {% if radies is empty %}
+                <div class="text-center py-16 text-slate-400"><p>Aucun professionnel radié.</p></div>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-left px-5 py-3 text-slate-500 font-medium">Société</th>
+                                <th class="text-left px-4 py-3 text-slate-500 font-medium hidden md:table-cell">Email</th>
+                                <th class="px-4 py-3 text-slate-500 font-medium">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for pro in radies %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <span>{{ pro.isEcommerce() ? '🛒' : '🏪' }}</span>
+                                            <div>
+                                                <div class="font-medium text-slate-500">{{ pro.nomSociete }}</div>
+                                                <div class="text-xs text-slate-400">{{ pro.ville ?? '— En ligne —' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4 hidden md:table-cell text-slate-400 text-xs">{{ pro.email }}</td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex gap-2">
+                                            <form method="POST" action="{{ path('admin_reactiver', {id: pro.id}) }}" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Réactiver
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ path('admin_supprimer', {id: pro.id}) }}" class="inline" onsubmit="return confirm('SUPPRIMER définitivement ?')">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_action') }}">
+                                                <button type="submit" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.add('hidden'); });
+            document.querySelectorAll('.tab-btn').forEach(function(b) {
+                b.classList.remove('border-emerald-600','text-emerald-700','bg-emerald-50');
+                b.classList.add('border-transparent','text-slate-500');
+            });
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            var btn = document.getElementById('tab-btn-' + id);
+            if (btn) {
+                btn.classList.add('border-emerald-600','text-emerald-700','bg-emerald-50');
+                btn.classList.remove('border-transparent','text-slate-500');
+            }
+        }
+    </script>
+{% endblock %}

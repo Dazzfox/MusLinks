@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block title %}Vérifiez votre email — MusLinks{% endblock %}
+
+{% block body %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-16">
+    <div class="max-w-md w-full text-center">
+
+        <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+        </div>
+
+        <h1 class="font-serif text-3xl font-bold text-emerald-900 mb-3">Vérifiez votre email</h1>
+
+        <p class="text-slate-600 leading-relaxed mb-6">
+            Un email de confirmation vient d'être envoyé à votre adresse.
+            Cliquez sur le lien qu'il contient pour finaliser votre inscription.
+        </p>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 mb-8 text-left">
+            <strong>Vous ne trouvez pas l'email ?</strong><br>
+            Vérifiez votre dossier spam. L'expéditeur est <em>noreply@muslinks.fr</em>.
+        </div>
+
+        <a href="{{ path('app_home') }}" class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-800 font-medium text-sm">
+            ← Retour à l'accueil
+        </a>
+
+    </div>
+</div>
+{% endblock %}

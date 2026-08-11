@@ -1,0 +1,62 @@
+<footer class="bg-emerald-950 text-white mt-auto">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+
+            {# ── Logo + description ── #}
+            <div class="flex items-center gap-3">
+                <a href="{{ path('app_home') }}" class="flex items-center gap-3">
+                    <svg width="36" height="36" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0">
+                        <defs>
+                            <radialGradient id="ft-bg" cx="30%" cy="25%" r="75%">
+                                <stop offset="0%" stop-color="#10b981"/>
+                                <stop offset="100%" stop-color="#064e3b"/>
+                            </radialGradient>
+                            <mask id="ft-crescent">
+                                <rect width="200" height="200" fill="white"/>
+                                <circle cx="126" cy="80" r="62" fill="black"/>
+                            </mask>
+                        </defs>
+                        <circle cx="100" cy="100" r="96" fill="url(#ft-bg)"/>
+                        <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/>
+                        <circle cx="94" cy="108" r="64" fill="#FCD34D" mask="url(#ft-crescent)"/>
+                        <text x="122" y="88" text-anchor="middle" dominant-baseline="central"
+                              font-family="Georgia,'Times New Roman',serif"
+                              font-size="28" font-weight="bold" font-style="italic"
+                              fill="#FCD34D" letter-spacing="-1">ML</text>
+                    </svg>
+                    <div>
+                        <div class="font-serif font-bold text-lg leading-tight">MusLinks</div>
+                        <div class="text-emerald-400 text-xs">Votre réseau de confiance</div>
+                    </div>
+                </a>
+            </div>
+
+            {# ── Liens ── #}
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-emerald-300">
+                <a href="{{ path('app_contact') }}" class="hover:text-white transition-colors">Contact</a>
+                <a href="{{ path('app_faq') }}" class="hover:text-white transition-colors">FAQ</a>
+                <a href="{{ path('app_cgu') }}" class="hover:text-white transition-colors">CGU</a>
+                <a href="{{ path('app_mentions_legales') }}" class="hover:text-white transition-colors">Mentions légales</a>
+                <a href="{{ path('app_confidentialite') }}" class="hover:text-white transition-colors">Confidentialité</a>
+            </div>
+
+            {# ── Soutenir ── #}
+            <a href="{{ path('app_don') }}" class="flex-shrink-0 inline-flex items-center gap-2 bg-emerald-900 border border-emerald-700 hover:border-amber-400 px-5 py-2.5 rounded-xl transition-colors text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                <span class="text-emerald-200">Soutenir <strong class="text-white">MusLinks</strong></span>
+            </a>
+
+        </div>
+    </div>
+
+    {# ── Copyright ── #}
+    <div class="border-t border-emerald-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center text-xs text-emerald-700">
+            &copy; {{ "now"|date("Y") }} MusLinks — Tous droits réservés · <a href="mailto:contact@muslinks.fr" class="hover:text-emerald-400 transition-colors">contact@muslinks.fr</a>
+        </div>
+    </div>
+
+</footer>

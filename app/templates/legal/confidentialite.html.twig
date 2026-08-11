@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité — MusLinks{% endblock %}
+{% block description %}Politique de confidentialité de MusLinks : données collectées, finalités, droits des utilisateurs et conformité RGPD.{% endblock %}
+
+{% block body %}
+
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-16 px-4 text-center">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-confidentialite'} %}
+    <h1 class="relative font-serif text-4xl font-bold text-white mb-3">Politique de confidentialité</h1>
+    <p class="text-white/80">Comment nous collectons, utilisons et protégeons vos données personnelles.</p>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 space-y-8">
+
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-sm text-emerald-800 flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+        </svg>
+        <span>MusLinks s'engage à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés. Dernière mise à jour : {{ "now"|date("d/m/Y") }}.</span>
+    </div>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">1. Responsable du traitement</h2>
+        <p class="text-sm text-slate-600">
+            Le responsable du traitement des données est MusLinks, joignable à l'adresse : <a href="mailto:contact@muslinks.fr" class="text-emerald-600 hover:text-emerald-800">contact@muslinks.fr</a>
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-5">2. Données collectées</h2>
+
+        <div class="space-y-5">
+            <div>
+                <h3 class="font-semibold text-slate-800 text-sm mb-2">Visiteurs (non inscrits)</h3>
+                <ul class="space-y-1 text-sm text-slate-600">
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Données de navigation (logs serveur, pages visitées)</li>
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Termes de recherche saisis dans l'annuaire</li>
+                </ul>
+            </div>
+            <div class="border-t border-slate-100 pt-4">
+                <h3 class="font-semibold text-slate-800 text-sm mb-2">Professionnels inscrits</h3>
+                <ul class="space-y-1 text-sm text-slate-600">
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Nom, prénom, adresse email professionnelle</li>
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Numéro SIRET, raison sociale, adresse professionnelle</li>
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Numéro de téléphone professionnel</li>
+                    <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Métier, description, site internet (si fournis)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">3. Finalités du traitement</h2>
+        <div class="space-y-3">
+            <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-emerald-500 font-bold text-sm mt-0.5">01</span>
+                <div>
+                    <div class="font-medium text-slate-800 text-sm">Référencement et mise en relation</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Affichage des fiches professionnelles dans l'annuaire public</div>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-emerald-500 font-bold text-sm mt-0.5">02</span>
+                <div>
+                    <div class="font-medium text-slate-800 text-sm">Vérification SIRET</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Contrôle de l'authenticité des professionnels inscrits</div>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-emerald-500 font-bold text-sm mt-0.5">03</span>
+                <div>
+                    <div class="font-medium text-slate-800 text-sm">Communication de service</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Envoi du lien de connexion sécurisé (magic link) et notifications importantes</div>
+                </div>
+            </div>
+            <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+                <span class="text-emerald-500 font-bold text-sm mt-0.5">04</span>
+                <div>
+                    <div class="font-medium text-slate-800 text-sm">Amélioration du service</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Analyse anonyme des usages pour améliorer l'expérience utilisateur</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">4. Base légale</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            Les traitements reposent sur : l'exécution du contrat (inscription professionnelle), l'intérêt légitime de MusLinks (amélioration du service, sécurité), et le consentement de l'utilisateur (communications optionnelles).
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">5. Durée de conservation</h2>
+        <div class="space-y-3 text-sm text-slate-600">
+            <div class="flex items-start gap-2">
+                <span class="text-emerald-500 mt-0.5">•</span>
+                <span>Données des professionnels : conservées pendant toute la durée de l'inscription active, puis 3 ans après la dernière activité.</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <span class="text-emerald-500 mt-0.5">•</span>
+                <span>Logs de navigation : conservés 12 mois maximum.</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">6. Partage des données</h2>
+        <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            MusLinks ne vend ni ne loue vos données personnelles à des tiers. Les données peuvent être partagées avec :
+        </p>
+        <ul class="space-y-2 text-sm text-slate-600">
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Notre hébergeur (stockage sécurisé des données)</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-500 mt-0.5">•</span> Les autorités compétentes, en cas d'obligation légale</li>
+        </ul>
+        <p class="text-sm text-slate-600 leading-relaxed mt-3">
+            Les informations figurant sur les fiches professionnelles (nom, adresse, téléphone professionnels, métier) sont publiques par nature et visibles par tous les visiteurs de l'annuaire.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-5">7. Vos droits</h2>
+        <p class="text-sm text-slate-600 mb-4">Conformément au RGPD, vous disposez des droits suivants :</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit d'accès</div>
+                <div class="text-slate-500 text-xs">Obtenir une copie de vos données</div>
+            </div>
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit de rectification</div>
+                <div class="text-slate-500 text-xs">Corriger des données inexactes</div>
+            </div>
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit à l'effacement</div>
+                <div class="text-slate-500 text-xs">Demander la suppression de vos données</div>
+            </div>
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit d'opposition</div>
+                <div class="text-slate-500 text-xs">Vous opposer à certains traitements</div>
+            </div>
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit à la portabilité</div>
+                <div class="text-slate-500 text-xs">Récupérer vos données dans un format lisible</div>
+            </div>
+            <div class="p-3 border border-emerald-100 rounded-xl text-sm">
+                <div class="font-semibold text-slate-800 mb-1">Droit à la limitation</div>
+                <div class="text-slate-500 text-xs">Restreindre le traitement de vos données</div>
+            </div>
+        </div>
+        <div class="mt-5 p-4 bg-emerald-50 rounded-xl text-sm text-emerald-800">
+            Pour exercer vos droits, contactez-nous à : <a href="mailto:contact@muslinks.fr" class="font-medium hover:text-emerald-900">contact@muslinks.fr</a>. Nous répondrons dans un délai d'un mois. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener" class="font-medium hover:text-emerald-900">CNIL</a>.
+        </div>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">8. Cookies</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks utilise uniquement des cookies techniques indispensables au fonctionnement du service (session, sécurité). Aucun cookie publicitaire ou de traçage n'est déposé sans votre consentement.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">9. Sécurité</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks met en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, perte ou destruction : connexions chiffrées (HTTPS), authentification sans mot de passe (magic link), accès restreints aux données.
+        </p>
+    </section>
+
+</div>
+
+{% endblock %}

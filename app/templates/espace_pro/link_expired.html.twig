@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block title %}Lien expiré — MusLinks{% endblock %}
+{% block body %}
+<div class="min-h-[80vh] flex items-center justify-center px-4">
+    <div class="text-center max-w-sm">
+        <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+        </div>
+        <h1 class="font-serif text-2xl font-bold text-slate-800 mb-3">Lien expiré ou invalide</h1>
+        <p class="text-slate-500 text-sm mb-8">Ce lien de connexion a expiré (valable 15 min) ou a déjà été utilisé. Faites une nouvelle demande.</p>
+        <a href="{{ path('pro_login') }}"
+           class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-3 rounded-xl transition-colors">
+            Demander un nouveau lien
+        </a>
+    </div>
+</div>
+{% endblock %}

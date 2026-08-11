@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte des professionnels — MusLinks{% endblock %}
+
+{% block leaflet_css %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+{% endblock %}
+
+{% block body %}
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="py-8 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+        <h1 class="font-serif text-3xl font-bold text-white mb-2">Carte des professionnels</h1>
+        <p class="text-white/80 text-sm">Trouvez les professionnels près de vous</p>
+    </div>
+</div>
+
+<div class="relative">
+    <div class="absolute top-4 left-4 right-4 z-20 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto">
+        <div class="flex gap-2 overflow-x-auto">
+            {% for cat in ['Tous','Santé','Droit & Conseil','Alimentation','Bâtiment & Travaux','Informatique & Tech','Beauté & Bien-être'] %}
+                <button onclick="filterMapByCategory('{{ cat }}')"
+                        data-cat="{{ cat }}"
+                        class="map-filter-btn whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium shadow-sm transition-colors
+                               {{ cat == 'Tous' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-700 hover:bg-emerald-50' }}">
+                    {{ cat }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="absolute top-16 right-4 z-20 flex flex-col gap-2">
+        <button id="gps-map-btn"
+                class="bg-white shadow-md rounded-xl p-3 text-emerald-700 hover:bg-emerald-50 transition-colors" title="Ma position">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="absolute top-28 right-4 z-20 flex flex-col gap-1">
+        {% for r in ['5','10','20','50'] %}
+            <button onclick="filterByRadius({{ r }})"
+                    class="radius-btn bg-white shadow-sm rounded-lg px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                {{ r }}km
+            </button>
+        {% endfor %}
+    </div>
+
+    <div id="map" style="height: 80vh; width: 100%;"></div>
+</div>
+
+{% endblock %}
+
+{% block leaflet_js %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var apiUrl = '{{ path("api_professionals") }}';
+        var allPros = [];
+        var markers = null;
+        var userMarker = null;
+        var userPos = null;
+        var currentCategory = 'Tous';
+
+        var map = L.map('map', { zoomControl: true }).setView([46.6034, 1.8883], 6);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 18
+        }).addTo(map);
+
+        var greenIcon = L.divIcon({
+            html: '<div style="background:#059669;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 24],
+            popupAnchor: [0, -24],
+            className: ''
+        });
+
+        function initMarkers() {
+            if (markers) { map.removeLayer(markers); }
+            markers = L.markerClusterGroup({ maxClusterRadius: 40 });
+
+            var filtered = allPros.filter(function(p) {
+                return currentCategory === 'Tous' || p.domaineActivite === currentCategory;
+            });
+
+            filtered.forEach(function(p) {
+                if (!p.latitude || !p.longitude) return;
+                var stars = '';
+                for (var i = 1; i <= 5; i++) {
+                    stars += '<span style="color:' + (i <= p.starsAverage ? '#059669' : '#d1fae5') + '">★</span>';
+                }
+                var popup = '<div style="min-width:200px;font-family:DM Sans,sans-serif">' +
+                    '<strong style="color:#064E3B;font-size:14px">' + p.nomSociete + '</strong><br>' +
+                    '<span style="color:#64748b;font-size:12px">' + p.profession + '</span><br>' +
+                    '<div style="margin:4px 0">' + stars + ' <span style="font-size:11px;color:#64748b">(' + p.totalAvis + ' avis)</span></div>' +
+                    '<div style="font-size:12px;color:#64748b">📍 ' + p.ville + '</div>' +
+                    '<a href="' + p.url + '" style="display:inline-block;margin-top:8px;background:#059669;color:white;padding:4px 12px;border-radius:8px;text-decoration:none;font-size:12px">Voir la fiche</a>' +
+                    '</div>';
+                L.marker([p.latitude, p.longitude], { icon: greenIcon })
+                    .bindPopup(popup)
+                    .addTo(markers);
+            });
+
+            map.addLayer(markers);
+        }
+
+        function filterMapByCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.map-filter-btn').forEach(function(btn) {
+                btn.classList.remove('bg-emerald-600','text-white');
+                btn.classList.add('bg-white','text-slate-700');
+            });
+            document.querySelector('[data-cat="' + cat + '"]').classList.add('bg-emerald-600','text-white');
+            document.querySelector('[data-cat="' + cat + '"]').classList.remove('bg-white','text-slate-700');
+            initMarkers();
+        }
+
+        function filterByRadius(km) {
+            if (!userPos) {
+                alert('Activez d\'abord la géolocalisation GPS.');
+                return;
+            }
+            document.querySelectorAll('.radius-btn').forEach(function(b) {
+                b.classList.remove('bg-emerald-600','text-white');
+                b.classList.add('bg-white','text-slate-700');
+            });
+            event.target.classList.add('bg-emerald-600','text-white');
+
+            if (markers) map.removeLayer(markers);
+            markers = L.markerClusterGroup({ maxClusterRadius: 40 });
+
+            allPros.forEach(function(p) {
+                if (!p.latitude || !p.longitude) return;
+                var dist = map.distance(userPos, [p.latitude, p.longitude]) / 1000;
+                if (dist > km) return;
+                L.marker([p.latitude, p.longitude], { icon: greenIcon })
+                    .bindPopup('<strong>' + p.nomSociete + '</strong><br><small>' + p.profession + '</small><br><a href="' + p.url + '" style="color:#059669">Voir la fiche</a>')
+                    .addTo(markers);
+            });
+            map.addLayer(markers);
+        }
+
+        document.getElementById('gps-map-btn').addEventListener('click', function() {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                userPos = [pos.coords.latitude, pos.coords.longitude];
+                if (userMarker) map.removeLayer(userMarker);
+                userMarker = L.circleMarker(userPos, {
+                    radius: 8, fillColor: '#059669', color: '#fff',
+                    weight: 3, opacity: 1, fillOpacity: 0.9
+                }).addTo(map).bindPopup('Vous êtes ici').openPopup();
+                map.setView(userPos, 13);
+            });
+        });
+
+        fetch(apiUrl)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                allPros = data;
+                initMarkers();
+            })
+            .catch(function(e) { console.error('Erreur carte:', e); });
+    </script>
+{% endblock %}

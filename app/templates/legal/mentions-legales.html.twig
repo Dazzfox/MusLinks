@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions légales — MusLinks{% endblock %}
+{% block description %}Mentions légales de MusLinks : éditeur, hébergeur, propriété intellectuelle et responsabilité.{% endblock %}
+
+{% block body %}
+
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-16 px-4 text-center">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-mentions'} %}
+    <h1 class="relative font-serif text-4xl font-bold text-white mb-3">Mentions légales</h1>
+    <p class="text-white/80">Informations légales relatives à l'éditeur et à l'hébergeur du site.</p>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 space-y-10">
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </span>
+            Éditeur du site
+        </h2>
+        <dl class="space-y-2 text-sm text-slate-600">
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Raison sociale</dt><dd>MusLinks</dd></div>
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Statut</dt><dd>Entreprise individuelle</dd></div>
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Email</dt><dd><a href="mailto:contact@muslinks.fr" class="text-emerald-600 hover:text-emerald-800">contact@muslinks.fr</a></dd></div>
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Directeur de publication</dt><dd>Le représentant légal de MusLinks</dd></div>
+        </dl>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+            </span>
+            Hébergement
+        </h2>
+        <dl class="space-y-2 text-sm text-slate-600">
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Hébergeur</dt><dd>o2switch</dd></div>
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Adresse</dt><dd>222-224 Boulevard Gustave Flaubert, 63000 Clermont-Ferrand, France</dd></div>
+            <div class="flex gap-2"><dt class="font-medium text-slate-800 w-40 flex-shrink-0">Site web</dt><dd><a href="https://www.o2switch.fr" target="_blank" rel="noopener" class="text-emerald-600 hover:text-emerald-800">www.o2switch.fr</a></dd></div>
+        </dl>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </span>
+            Propriété intellectuelle
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            L'ensemble du contenu de ce site (textes, images, logo, structure) est protégé par les lois françaises et internationales relatives à la propriété intellectuelle et aux droits d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable écrite de MusLinks.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            Limitation de responsabilité
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            MusLinks s'efforce de maintenir les informations disponibles sur ce site à jour et exactes. Cependant, nous ne pouvons garantir l'exactitude, la complétude ou l'actualité des informations fournies. Les fiches professionnelles sont soumises à vérification SIRET mais restent sous la responsabilité des professionnels inscrits.
+        </p>
+        <p class="text-sm text-slate-600 leading-relaxed mt-3">
+            MusLinks ne saurait être tenue responsable des dommages directs ou indirects résultant de l'utilisation de ce site ou des informations qu'il contient.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            Liens hypertextes
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            Ce site peut contenir des liens vers des sites externes. MusLinks n'est pas responsable du contenu de ces sites tiers et ne peut être tenu pour responsable de tout dommage résultant de leur consultation.
+        </p>
+    </section>
+
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+            <span class="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+            </span>
+            Droit applicable
+        </h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+            Les présentes mentions légales sont régies par le droit français. En cas de litige, les tribunaux compétents de la juridiction française seront seuls compétents.
+        </p>
+    </section>
+
+    <div class="text-center text-xs text-slate-400">
+        Dernière mise à jour : {{ "now"|date("d/m/Y") }}
+    </div>
+
+</div>
+
+{% endblock %}

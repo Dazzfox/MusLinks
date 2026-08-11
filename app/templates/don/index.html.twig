@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Soutenir MusLinks — Ensemble, encore plus fort{% endblock %}
+{% block description %}MusLinks est un annuaire participatif soutenu par la communauté. Chaque don, même symbolique, nous aide à maintenir et améliorer le service.{% endblock %}
+
+{% block body %}
+
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-16 px-4 text-center">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-don'} %}
+    <div class="relative">
+        <div class="inline-flex items-center gap-2 bg-white/15 text-white text-sm font-medium px-4 py-2 rounded-full mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            Annuaire participatif & communautaire
+        </div>
+        <h1 class="font-serif text-4xl sm:text-5xl font-bold text-white mb-4">Ensemble, encore plus fort</h1>
+        <p class="text-white/80 text-lg max-w-xl mx-auto">
+            MusLinks est porté par et pour la communauté. Chaque don, même d'1 €, contribue à la maintenance technique et à la croissance de l'annuaire.
+        </p>
+    </div>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+
+    <div class="grid md:grid-cols-2 gap-10 items-start">
+
+        {# ── Formulaire de don ── #}
+        <div class="bg-white rounded-2xl shadow-sm p-8 border border-emerald-50">
+            <h2 class="font-serif text-2xl font-bold text-emerald-900 mb-6">Faire un don</h2>
+
+            <form method="POST" action="{{ path('app_don_checkout') }}" id="don-form">
+
+                {# Montants suggérés #}
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-slate-700 mb-3">Choisissez un montant :</p>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="preset" value="1" class="sr-only peer" checked>
+                            <div class="peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600
+                                        border-2 border-slate-200 rounded-xl p-3 text-center text-sm font-semibold text-slate-700
+                                        hover:border-emerald-400 transition-colors">
+                                1 €
+                                <div class="text-xs font-normal opacity-70 mt-0.5">Symbolique</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="preset" value="5" class="sr-only peer">
+                            <div class="peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600
+                                        border-2 border-slate-200 rounded-xl p-3 text-center text-sm font-semibold text-slate-700
+                                        hover:border-emerald-400 transition-colors">
+                                5 €
+                                <div class="text-xs font-normal opacity-70 mt-0.5">Généreux</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="preset" value="10" class="sr-only peer">
+                            <div class="peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600
+                                        border-2 border-slate-200 rounded-xl p-3 text-center text-sm font-semibold text-slate-700
+                                        hover:border-emerald-400 transition-colors">
+                                10 €
+                                <div class="text-xs font-normal opacity-70 mt-0.5">Bienfaiteur</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                {# Montant libre #}
+                <div class="mb-6">
+                    <label class="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                        <input type="radio" name="preset" value="custom" id="preset-custom" class="text-emerald-600">
+                        Autre montant
+                    </label>
+                    <div class="relative mt-2" id="custom-field" style="display:none">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">€</span>
+                        <input type="number" id="custom-amount" name="custom_amount" min="1" step="1" placeholder="Ex : 20"
+                               class="w-full pl-8 pr-4 py-3 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-sm">
+                    </div>
+                </div>
+
+                <input type="hidden" name="amount" id="amount-hidden" value="1">
+
+                <button type="submit"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    Soutenir MusLinks
+                </button>
+
+                <p class="text-xs text-slate-400 text-center mt-3">
+                    Paiement sécurisé via Stripe · Aucun compte requis
+                </p>
+            </form>
+        </div>
+
+        {# ── Message communauté ── #}
+        <div class="space-y-6">
+
+            <div class="bg-emerald-50 rounded-2xl p-6">
+                <h3 class="font-serif text-xl font-bold text-emerald-900 mb-3">Pourquoi contribuer ?</h3>
+                <ul class="space-y-3 text-sm text-emerald-800">
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-600 mt-0.5 flex-shrink-0">✓</span>
+                        Maintenir les serveurs et l'infrastructure technique
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-600 mt-0.5 flex-shrink-0">✓</span>
+                        Améliorer l'annuaire et ajouter de nouvelles fonctionnalités
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-600 mt-0.5 flex-shrink-0">✓</span>
+                        Vérifier manuellement les dossiers professionnels
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-600 mt-0.5 flex-shrink-0">✓</span>
+                        Garder l'accès à l'annuaire <strong>100% gratuit</strong> pour tous
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-emerald-900 rounded-2xl p-6 text-white">
+                <div class="flex items-start gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <div>
+                        <p class="font-bold text-lg mb-1">Ensemble, encore plus fort</p>
+                        <p class="text-emerald-300 text-sm leading-relaxed">
+                            MusLinks est né d'une conviction : notre communauté mérite un annuaire de confiance, transparent et indépendant. Chaque contribution, même modeste, nous permet de continuer cette mission ensemble.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-400 leading-relaxed">
+                Les dons sont utilisés exclusivement pour les coûts techniques (hébergement, nom de domaine, maintenance) et la modération des fiches professionnelles. MusLinks est un projet indépendant, sans publicité.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+(function () {
+    var radios     = document.querySelectorAll('input[name="preset"]');
+    var customDiv  = document.getElementById('custom-field');
+    var customInput= document.getElementById('custom-amount');
+    var hidden     = document.getElementById('amount-hidden');
+    var form       = document.getElementById('don-form');
+
+    function update() {
+        var checked = document.querySelector('input[name="preset"]:checked');
+        if (!checked) return;
+
+        if (checked.value === 'custom') {
+            customDiv.style.display = 'block';
+            customInput.required = true;
+            hidden.value = customInput.value || '1';
+        } else {
+            customDiv.style.display = 'none';
+            customInput.required = false;
+            hidden.value = checked.value;
+        }
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', update); });
+    customInput.addEventListener('input', function () { hidden.value = customInput.value || '1'; });
+
+    form.addEventListener('submit', function (e) {
+        var checked = document.querySelector('input[name="preset"]:checked');
+        if (checked && checked.value === 'custom') {
+            var val = parseFloat(customInput.value);
+            if (!val || val < 1) {
+                e.preventDefault();
+                customInput.focus();
+                customInput.style.borderColor = '#ef4444';
+            } else {
+                hidden.value = val;
+            }
+        }
+    });
+
+    update();
+})();
+</script>
+{% endblock %}

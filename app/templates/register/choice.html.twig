@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+{% block title %}Rejoindre MusLinks — Quel type de présence ?{% endblock %}
+
+{% block body %}
+<div class="min-h-[85vh] flex items-center justify-center px-4 py-16" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);">
+    <div class="w-full max-w-3xl">
+
+        <div class="text-center mb-12">
+            <h1 class="font-serif text-4xl font-bold text-emerald-900 mb-3">Rejoindre MusLinks</h1>
+            <p class="text-slate-500 text-lg">Choisissez votre type de présence — inscription gratuite, soutenu par la communauté</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            {# ── Commerce physique ── #}
+            <a href="{{ path('app_register_physical') }}"
+               class="group bg-white rounded-2xl shadow-md border-2 border-emerald-100 hover:border-emerald-400 hover:shadow-xl p-8 flex flex-col items-center text-center transition-all duration-200">
+
+                <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 transition-colors group-hover:scale-105 duration-200" style="background: linear-gradient(135deg, #059669, #064e3b);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+
+                <h2 class="font-serif text-2xl font-bold text-emerald-900 mb-3">Commerce physique</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                    Vous avez une adresse, un local, un cabinet ou un bureau. Vos clients peuvent vous rendre visite.
+                </p>
+
+                <ul class="text-left text-sm text-slate-600 space-y-2 mb-8 w-full">
+                    <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Fiche avec adresse & carte</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Numéro SIRET vérifié</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Avis clients</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald-500">✓</span> Ensemble, encore plus fort</li>
+                </ul>
+
+                <span class="mt-auto inline-flex items-center gap-2 bg-emerald-600 group-hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                    Inscrire mon commerce
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </span>
+            </a>
+
+            {# ── Boutique en ligne ── #}
+            <a href="{{ path('app_register_ecommerce') }}"
+               class="group bg-white rounded-2xl shadow-md border-2 border-indigo-100 hover:border-indigo-400 hover:shadow-xl p-8 flex flex-col items-center text-center transition-all duration-200">
+
+                <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-5 transition-colors group-hover:scale-105 duration-200" style="background: linear-gradient(135deg, #6366f1, #312e81);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+
+                <h2 class="font-serif text-2xl font-bold text-indigo-900 mb-3">Boutique en ligne</h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                    Vous vendez uniquement sur internet. Pas de local physique, juste votre site e-commerce.
+                </p>
+
+                <ul class="text-left text-sm text-slate-600 space-y-2 mb-8 w-full">
+                    <li class="flex items-center gap-2"><span class="text-indigo-500">✓</span> Inscription en 2 minutes</li>
+                    <li class="flex items-center gap-2"><span class="text-indigo-500">✓</span> Lien direct vers votre boutique</li>
+                    <li class="flex items-center gap-2"><span class="text-indigo-500">✓</span> Pas de SIRET requis</li>
+                    <li class="flex items-center gap-2"><span class="text-indigo-500">✓</span> Inscription gratuite</li>
+                </ul>
+
+                <span class="mt-auto inline-flex items-center gap-2 bg-indigo-600 group-hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                    Référencer ma boutique
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </span>
+            </a>
+
+        </div>
+
+        <p class="text-center text-xs text-slate-400 mt-8">
+            Déjà inscrit ?
+            <a href="{{ path('pro_login') }}" class="text-emerald-600 hover:text-emerald-800 font-medium">Accéder à mon espace professionnel</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

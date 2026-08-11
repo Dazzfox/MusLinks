@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0fdf4; margin: 0; padding: 0; }
+        .wrapper { max-width: 520px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(5,150,105,0.10); }
+        .header { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); padding: 36px 40px; text-align: center; }
+        .header-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+        .header-initials { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; font-family: Georgia, serif; }
+        .header-name { color: white; font-family: Georgia, serif; font-size: 22px; font-weight: bold; }
+        .badge { display: inline-block; background: rgba(255,255,255,0.2); color: white; font-size: 12px; padding: 4px 12px; border-radius: 20px; margin-top: 10px; }
+        .body { padding: 36px 40px; }
+        h1 { font-family: Georgia, serif; color: #064e3b; font-size: 22px; margin: 0 0 12px; }
+        p { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
+        .check-row { display: flex; align-items: center; gap: 10px; background: #f0fdf4; border: 1px solid #d1fae5; border-radius: 10px; padding: 12px 16px; margin: 8px 0; }
+        .check-icon { color: #059669; font-size: 18px; flex-shrink: 0; }
+        .check-text { color: #065f46; font-size: 14px; }
+        .btn { display: block; background: #059669; color: white !important; text-decoration: none; text-align: center; padding: 16px 32px; border-radius: 14px; font-weight: 600; font-size: 16px; margin: 28px 0; }
+        .info-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 14px 18px; margin: 20px 0; }
+        .info-box p { color: #92400e; font-size: 13px; margin: 0; }
+        .footer { padding: 20px 40px; border-top: 1px solid #f1f5f9; text-align: center; }
+        .footer p { color: #94a3b8; font-size: 12px; margin: 0; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <div class="header-logo">
+            <svg width="40" height="40" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="bv-bg" cx="30%" cy="25%" r="75%">
+                        <stop offset="0%" stop-color="#10b981"/>
+                        <stop offset="100%" stop-color="#064e3b"/>
+                    </radialGradient>
+                    <mask id="bv-crescent">
+                        <rect width="200" height="200" fill="white"/>
+                        <circle cx="126" cy="80" r="62" fill="black"/>
+                    </mask>
+                </defs>
+                <circle cx="100" cy="100" r="96" fill="url(#bv-bg)"/>
+                <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/>
+                <circle cx="94" cy="108" r="64" fill="#FCD34D" mask="url(#bv-crescent)"/>
+                <text x="122" y="88" text-anchor="middle" dominant-baseline="central"
+                      font-family="Georgia,'Times New Roman',serif"
+                      font-size="28" font-weight="bold" font-style="italic"
+                      fill="#FCD34D" letter-spacing="-1">ML</text>
+            </svg>
+            <span class="header-name">MusLinks</span>
+        </div>
+        <div class="badge">✓ Fiche activée</div>
+    </div>
+
+    <div class="body">
+        <h1>Bienvenue sur MusLinks{% if professional.prenomResponsable %}, {{ professional.prenomResponsable }}{% endif %} 🎉</h1>
+
+        <p>Votre inscription pour <strong>{{ professional.nomSociete }}</strong> a été validée automatiquement. Votre fiche est <strong>immédiatement visible</strong> dans l'annuaire.</p>
+
+        {% if professional.siretValide %}
+        <div class="check-row">
+            <span class="check-icon">✓</span>
+            <span class="check-text">SIRET <strong>{{ professional.siret }}</strong> vérifié dans le registre national</span>
+        </div>
+        {% endif %}
+        <div class="check-row">
+            <span class="check-icon">✓</span>
+            <span class="check-text">Fiche en ligne dans l'annuaire MusLinks</span>
+        </div>
+        <div class="check-row">
+            <span class="check-icon">✓</span>
+            <span class="check-text">Inscription et hébergement <strong>100% gratuits</strong></span>
+        </div>
+
+        <a href="{{ dashboard_url }}" class="btn">Accéder à mon espace →</a>
+
+        <div class="info-box">
+            <p>💡 Pensez à compléter votre fiche (photo, description, horaires) pour attirer plus de clients.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>MusLinks — Votre réseau de confiance<br>
+        Cet email a été envoyé à {{ professional.email }}</p>
+    </div>
+</div>
+</body>
+</html>

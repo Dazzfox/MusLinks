@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}Merci pour votre soutien — MusLinks{% endblock %}
+
+{% block body %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-16">
+    <div class="max-w-md w-full text-center">
+
+        <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+        </div>
+
+        <h1 class="font-serif text-3xl font-bold text-emerald-900 mb-3">Jazakom Allahu Khayran</h1>
+        <p class="text-slate-600 leading-relaxed mb-2">
+            Votre don a bien été reçu. Merci de soutenir MusLinks et de contribuer à la force de notre communauté.
+        </p>
+        <p class="text-emerald-700 font-semibold mb-8">Ensemble, encore plus fort.</p>
+
+        <div class="bg-emerald-50 rounded-xl p-5 text-sm text-emerald-800 mb-8">
+            Votre contribution aide à maintenir l'annuaire gratuit pour tous et à vérifier les fiches professionnelles avec soin.
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{{ path('app_home') }}"
+               class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                Retour à l'accueil
+            </a>
+            <a href="{{ path('app_search') }}"
+               class="inline-flex items-center justify-center gap-2 border border-emerald-300 text-emerald-700 hover:border-emerald-500 font-semibold px-6 py-3 rounded-xl transition-colors">
+                Explorer l'annuaire
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

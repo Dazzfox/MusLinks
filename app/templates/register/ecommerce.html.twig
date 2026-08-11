@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+{% block title %}Référencer ma boutique en ligne — MusLinks{% endblock %}
+
+{% block body %}
+
+{# ── En-tête ── #}
+<div class="relative overflow-hidden" style="background: linear-gradient(135deg, #312e81 0%, #4f46e5 60%, #6366f1 100%); min-height: 180px;">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-ecom'} %}
+    <div class="relative z-10 max-w-3xl mx-auto px-4 py-14 text-center">
+        <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white/80 text-xs font-medium px-4 py-1.5 rounded-full mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <a href="{{ path('app_register') }}" class="hover:text-white transition-colors">Choisir mon type d'inscription</a>
+        </div>
+        <h1 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">Référencer ma boutique en ligne</h1>
+        <p class="text-indigo-200 text-sm">Simple, rapide — votre boutique visible en quelques minutes</p>
+    </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 py-12">
+
+    {{ form_start(form, {
+        attr: {
+            class: 'space-y-8',
+            enctype: 'multipart/form-data'
+        }
+    }) }}
+
+    {# ── Infos de base ── #}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+        <h2 class="font-serif text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-sm font-bold">1</span>
+            Votre boutique
+        </h2>
+
+        <div class="space-y-5">
+
+            {# Nom #}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Nom de la boutique <span class="text-red-400">*</span>
+                </label>
+                {{ form_widget(form.nomSociete, {attr: {
+                    class: 'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm transition-all',
+                    placeholder: 'Ex : Épicerie Baraka, Robes Élégance…'
+                }}) }}
+                {{ form_errors(form.nomSociete) }}
+            </div>
+
+            {# Catégorie #}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Catégorie <span class="text-red-400">*</span>
+                </label>
+                {{ form_widget(form.domaineActivite, {attr: {
+                    class: 'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm transition-all bg-white'
+                }}) }}
+                {{ form_errors(form.domaineActivite) }}
+            </div>
+
+            {# URL boutique #}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                    URL de votre boutique <span class="text-red-400">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                    </span>
+                    {{ form_widget(form.siteEcommerce, {attr: {
+                        class: 'w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm transition-all',
+                        placeholder: 'https://monshop.fr'
+                    }}) }}
+                </div>
+                {{ form_errors(form.siteEcommerce) }}
+            </div>
+
+            {# Email #}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Email de contact <span class="text-red-400">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </span>
+                    {{ form_widget(form.email, {attr: {
+                        class: 'w-full pl-9 pr-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm transition-all',
+                        placeholder: 'contact@monshop.fr'
+                    }}) }}
+                </div>
+                {{ form_errors(form.email) }}
+                <p class="text-xs text-slate-400 mt-1">Cet email sera utilisé pour accéder à votre espace professionnel</p>
+            </div>
+
+        </div>
+    </div>
+
+    {# ── Description & Photo ── #}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+        <h2 class="font-serif text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <span class="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-lg flex items-center justify-center text-sm font-bold">2</span>
+            Présentation <span class="text-slate-400 text-sm font-normal ml-1">(optionnel)</span>
+        </h2>
+
+        <div class="space-y-5">
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
+                {{ form_widget(form.description, {attr: {
+                    class: 'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm transition-all resize-none',
+                    rows: 4,
+                    placeholder: 'Décrivez vos produits, votre univers, ce qui vous rend unique…'
+                }}) }}
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Logo / Visuel</label>
+                <div class="border-2 border-dashed border-slate-200 hover:border-indigo-300 rounded-xl p-5 text-center transition-colors cursor-pointer">
+                    {{ form_widget(form.imageFile) }}
+                    <p class="text-xs text-slate-400 mt-2">JPG, PNG — max 5 Mo</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {# ── Récap gratuit + bouton ── #}
+    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center">
+        <p class="text-indigo-800 font-semibold text-sm mb-1">🎉 1ère année gratuite — sans engagement</p>
+        <p class="text-indigo-600 text-xs">Votre fiche sera examinée et activée sous 24–48h</p>
+    </div>
+
+    <button type="submit"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Référencer ma boutique gratuitement
+    </button>
+
+    {{ form_end(form) }}
+
+</div>
+{% endblock %}

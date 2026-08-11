@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MusLinks — Le réseau des professionnels de confiance{% endblock %}</title>
+    <meta name="description" content="{% block description %}MusLinks connecte particuliers et professionnels qui partagent les mêmes valeurs d'éthique, de transparence et de service bienveillant.{% endblock %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ml: {
+                            50: '#ECFDF5', 100: '#D1FAE5', 200: '#A7F3D0',
+                            300: '#6EE7B7', 400: '#34D399', 500: '#10B981',
+                            600: '#059669', 700: '#047857', 800: '#065F46', 900: '#064E3B',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+                        mono: ['DM Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    {% block leaflet_css %}{% endblock %}
+
+    {% block stylesheets %}
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
+<body class="font-sans bg-emerald-50 text-slate-800 min-h-screen flex flex-col">
+
+    {% include 'components/_navbar.html.twig' %}
+
+    <div id="flash-container" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm w-full pointer-events-none">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash-alert pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2
+                    {% if label == 'success' %}bg-emerald-600 text-white
+                    {% elseif label == 'danger' %}bg-red-600 text-white
+                    {% elseif label == 'info' %}bg-sky-600 text-white
+                    {% else %}bg-slate-700 text-white{% endif %}">
+                    <span class="flex-1">{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100 text-xl leading-none">&times;</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <main class="flex-1">
+        {% block body %}{% endblock %}
+    </main>
+
+    {% include 'components/_footer.html.twig' %}
+
+    {% block leaflet_js %}{% endblock %}
+
+    <script>
+        document.querySelectorAll('.flash-alert').forEach(function(el) {
+            setTimeout(function() {
+                el.style.transition = 'opacity .4s, transform .4s';
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(20px)';
+            }, 4000);
+            setTimeout(function() { el.remove(); }, 4500);
+        });
+    </script>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

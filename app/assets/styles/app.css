@@ -1,0 +1,253 @@
+/* MusLinks — Styles personnalisés */
+
+/* ── Animations ── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.4s ease both; }
+.animate-fade-in    { animation: fadeIn 0.3s ease both; }
+
+/* ── Cartes professionnels ── */
+.pro-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.pro-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.12);
+}
+
+/* ── Formulaires ── */
+.form-input {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid #d1fae5;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    background: #ffffff;
+}
+
+.form-input:focus {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ── Boutons actifs ── */
+button:active, a[class*="bg-"]:active {
+    transform: scale(0.97);
+}
+
+/* ── Toast notifications ── */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    background: #047857;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: fadeInUp 0.3s ease;
+    pointer-events: none;
+}
+
+/* ── Scrollbar masquée ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Typographie ── */
+h1, h2, h3, .font-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+body, input, select, textarea, button {
+    font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+code, .font-mono, [class*="font-mono"] {
+    font-family: 'DM Mono', monospace;
+}
+
+/* ── Étoiles interactives ── */
+.star-btn {
+    cursor: pointer;
+    font-size: 1.875rem;
+    line-height: 1;
+    color: #e2e8f0;
+    transition: color 0.15s, transform 0.1s;
+    background: none;
+    border: none;
+    padding: 0 0.125rem;
+}
+
+.star-btn:hover,
+.star-btn.active {
+    color: #059669;
+    transform: scale(1.1);
+}
+
+/* ── PIN digits ── */
+.pin-digit {
+    width: 3rem;
+    height: 3.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 2px solid #d1fae5;
+    border-radius: 0.75rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    caret-color: transparent;
+}
+
+.pin-digit:focus {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+}
+
+.pin-digit.filled {
+    border-color: #059669;
+    background: #ecfdf5;
+    color: #064e3b;
+}
+
+/* ── Formule cards radio ── */
+.formule-card {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formule-radio:checked + .formule-card,
+.formule-card.selected {
+    border-color: #059669 !important;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+    background: #f0fdf4;
+}
+
+/* ── Map ── */
+#map {
+    width: 100%;
+    background: #f0fdf4;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(5, 150, 105, 0.15) !important;
+}
+
+.leaflet-popup-tip {
+    background: white !important;
+}
+
+/* ── Admin tabs ── */
+.tab-btn {
+    transition: background-color 0.15s, color 0.15s;
+}
+
+/* ── Responsive utilities ── */
+@media (max-width: 640px) {
+    .pro-card { margin-bottom: 0; }
+    h1 { font-size: 2rem; }
+}
+
+
+/* ── Autocomplete dropdown ── */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d1fae5;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.15);
+    z-index: 200;
+    margin-top: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.autocomplete-item {
+    display: block !important;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    color: #1e293b;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.12s;
+    font-family: 'DM Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item:focus {
+    background: #ecfdf5;
+    color: #059669;
+    outline: none;
+}
+
+/* ── Pagination KNP ── */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.pagination .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid #d1fae5;
+    color: #059669;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s;
+    background: white;
+}
+
+.pagination .page-link:hover {
+    background: #d1fae5;
+    border-color: #059669;
+}
+
+.pagination .active .page-link {
+    background: #059669;
+    color: white;
+    border-color: #059669;
+}
+
+.pagination .disabled .page-link {
+    opacity: 0.4;
+    pointer-events: none;
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0fdf4; margin: 0; padding: 0; }
+        .wrapper { max-width: 520px; margin: 40px auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(5,150,105,0.10); }
+        .header { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); padding: 36px 40px; text-align: center; }
+        .header-logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+        .header-initials { width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; font-family: Georgia, serif; }
+        .header-name { color: white; font-family: Georgia, serif; font-size: 22px; font-weight: bold; }
+        .body { padding: 36px 40px; }
+        h1 { font-family: Georgia, serif; color: #064e3b; font-size: 22px; margin: 0 0 12px; }
+        p { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 20px; }
+        .btn { display: block; background: #059669; color: white !important; text-decoration: none; text-align: center; padding: 16px 32px; border-radius: 14px; font-weight: 600; font-size: 16px; margin: 28px 0; }
+        .info-box { background: #f0fdf4; border: 1px solid #d1fae5; border-radius: 12px; padding: 14px 18px; margin: 20px 0; }
+        .info-box p { color: #065f46; font-size: 13px; margin: 0; }
+        .url { word-break: break-all; font-size: 11px; color: #94a3b8; margin-top: 8px; }
+        .footer { padding: 20px 40px; border-top: 1px solid #f1f5f9; text-align: center; }
+        .footer p { color: #94a3b8; font-size: 12px; margin: 0; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <div class="header-logo">
+            <div class="header-initials">ML</div>
+            <span class="header-name">MusLinks</span>
+        </div>
+    </div>
+
+    <div class="body">
+        <h1>Bonjour {{ professional.prenomResponsable }} 👋</h1>
+        <p>Vous avez demandé à accéder à votre espace professionnel MusLinks pour <strong>{{ professional.nomSociete }}</strong>.</p>
+        <p>Cliquez sur le bouton ci-dessous pour vous connecter :</p>
+
+        <a href="{{ link }}" class="btn">Accéder à mon espace →</a>
+
+        <div class="info-box">
+            <p>⏱ Ce lien est valable <strong>{{ expires_min }} minutes</strong> et ne peut être utilisé qu'une seule fois.</p>
+        </div>
+
+        <p>Si vous n'avez pas demandé cette connexion, ignorez simplement cet email — votre compte reste sécurisé.</p>
+
+        <p class="url">Lien : {{ link }}</p>
+    </div>
+
+    <div class="footer">
+        <p>MusLinks — Le réseau des professionnels de confiance<br>
+        Cet email a été envoyé à {{ professional.email }}</p>
+    </div>
+</div>
+</body>
+</html>

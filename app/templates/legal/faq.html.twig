@@ -1,0 +1,166 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FAQ — Questions fréquentes — MusLinks{% endblock %}
+{% block description %}Toutes les réponses à vos questions sur MusLinks : inscription, vérification SIRET, avis, tarifs et fonctionnement de l'annuaire.{% endblock %}
+
+{% block body %}
+
+<div style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-16 px-4 text-center">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-faq'} %}
+    <h1 class="relative font-serif text-4xl font-bold text-white mb-3">Questions fréquentes</h1>
+    <p class="text-white/80">Tout ce que vous devez savoir sur MusLinks.</p>
+</div>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+
+    {# Particuliers #}
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+            <h2 class="font-serif text-2xl font-bold text-emerald-900">Pour les particuliers</h2>
+        </div>
+
+        <div class="space-y-3" id="faq-particuliers">
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment fonctionne l'annuaire MusLinks ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    MusLinks est un annuaire en ligne qui référence des professionnels vérifiés. Chaque fiche est contrôlée par numéro SIRET avant publication, garantissant que les professionnels listés exercent légalement leur activité. Vous pouvez rechercher par métier et par ville, consulter les fiches et contacter directement les professionnels.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>L'accès à l'annuaire est-il gratuit ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Oui, la consultation de l'annuaire est entièrement gratuite pour les particuliers. Aucune inscription n'est requise pour rechercher un professionnel ou consulter une fiche.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment sont vérifiés les professionnels ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Chaque professionnel fournit son numéro SIRET lors de l'inscription. Celui-ci est vérifié automatiquement en temps réel via le registre officiel des entreprises françaises (INSEE/SIRENE) : format, clé de contrôle, et statut actif de l'entreprise. Un SIRET invalide ou d'une entreprise radiée est rejeté immédiatement. Cette vérification garantit que vous ne trouverez que des professionnels légalement établis.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment rechercher un professionnel près de chez moi ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Utilisez la barre de recherche sur la page d'accueil : saisissez votre métier (ex. "boulanger", "électricien") et votre ville ou code postal. L'autocomplétion vous suggère des villes et des métiers au fil de votre saisie. Vous pouvez aussi parcourir l'annuaire par catégorie.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment laisser un avis sur un professionnel ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Sur la fiche d'un professionnel, vous trouverez une section avis. Les avis doivent être basés sur une expérience réelle. MusLinks se réserve le droit de modérer tout avis non conforme à la charte de la communauté.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment signaler un professionnel ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Si vous constatez une irrégularité (informations fausses, comportement inapproprié), contactez-nous à <a href="mailto:contact@muslinks.fr" class="text-emerald-600 hover:text-emerald-800">contact@muslinks.fr</a> en précisant l'URL de la fiche concernée. Nous traitons chaque signalement avec sérieux.
+                </div>
+            </details>
+
+        </div>
+    </div>
+
+    {# Professionnels #}
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-700 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <h2 class="font-serif text-2xl font-bold text-emerald-900">Pour les professionnels</h2>
+        </div>
+
+        <div class="space-y-3">
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment inscrire mon entreprise sur MusLinks ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Cliquez sur "Inscrire mon entreprise" et renseignez le formulaire : raison sociale, SIRET, métier, coordonnées. Votre SIRET est vérifié automatiquement. Si votre entreprise est active au registre, vous recevez un email de confirmation — un simple clic sur le lien active votre fiche immédiatement, sans attendre de validation manuelle.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>L'inscription est-elle payante ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    L'inscription et l'hébergement de votre fiche sont <strong class="text-emerald-700">100% gratuits</strong>, sans abonnement ni carte bancaire. MusLinks est entièrement financé par les dons volontaires de la communauté. Vous pouvez soutenir le projet via la page <a href="{{ path('app_don') }}" class="text-emerald-600 hover:text-emerald-800">Soutenir MusLinks</a> si vous le souhaitez.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment me connecter à mon espace professionnel ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    MusLinks utilise un système de connexion sans mot de passe (magic link). Rendez-vous sur la page de connexion professionnelle, saisissez votre adresse email, et vous recevrez un lien de connexion unique valable 15 minutes. Pas de mot de passe à retenir.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment modifier les informations de ma fiche ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Connectez-vous à votre espace professionnel. Depuis votre tableau de bord, cliquez sur "Modifier ma fiche" pour mettre à jour vos informations (description, téléphone, horaires, site web). Les modifications sont prises en compte immédiatement.
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm overflow-hidden group">
+                <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-slate-800 hover:text-emerald-700 transition-colors list-none">
+                    <span>Comment supprimer ma fiche ?</span>
+                    <svg class="h-5 w-5 text-emerald-500 transition-transform group-open:rotate-180 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </summary>
+                <div class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                    Contactez-nous à <a href="mailto:contact@muslinks.fr" class="text-emerald-600 hover:text-emerald-800">contact@muslinks.fr</a> depuis l'adresse email associée à votre compte. Nous traiterons votre demande dans les 48 heures.
+                </div>
+            </details>
+
+        </div>
+    </div>
+
+    {# CTA contact #}
+    <div class="bg-emerald-900 rounded-2xl p-8 text-center">
+        <h2 class="font-serif text-2xl font-bold text-white mb-3">Vous n'avez pas trouvé votre réponse ?</h2>
+        <p class="text-emerald-300 text-sm mb-5">Notre équipe répond à toutes vos questions sous 24 à 48 heures.</p>
+        <a href="{{ path('app_contact') }}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Contactez-nous
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

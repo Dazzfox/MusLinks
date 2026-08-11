@@ -1,0 +1,10 @@
+{% set badgeMap = {
+    'EN_ATTENTE': {label: 'En attente', cls: 'bg-indigo-50 text-indigo-700 border border-indigo-200'},
+    'ACTIF': {label: 'Actif', cls: 'bg-emerald-100 text-emerald-800 border border-emerald-200'},
+    'RENOUVELLEMENT': {label: 'Renouvellement', cls: 'bg-yellow-100 text-yellow-800 border border-yellow-200'},
+    'RADIE': {label: 'Radié', cls: 'bg-red-100 text-red-700 border border-red-200'},
+} %}
+{% set badge = badgeMap[statut] ?? {label: statut, cls: 'bg-slate-100 text-slate-700'} %}
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ badge.cls }}">
+    {{ badge.label }}
+</span>

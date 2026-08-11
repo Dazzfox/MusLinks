@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion Admin — MusLinks{% endblock %}
+
+{% block body %}
+<div class="min-h-[90vh] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-sm">
+
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h1 class="font-serif text-2xl font-bold text-emerald-900">Espace Administration</h1>
+            <p class="text-slate-500 text-sm mt-1">Saisissez votre code PIN à 6 chiffres</p>
+        </div>
+
+        {% if error %}
+            <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6 text-center">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{{ path('admin_login') }}" id="pin-form">
+            <div class="flex justify-center gap-3 mb-8">
+                {% for i in 1..6 %}
+                    <input type="text"
+                           name="digits[]"
+                           maxlength="1"
+                           inputmode="numeric"
+                           pattern="[0-9]"
+                           class="pin-digit w-12 h-14 text-center text-xl font-bold border-2 border-emerald-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-slate-800 caret-transparent"
+                           autocomplete="off">
+                {% endfor %}
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-colors active:scale-95">
+                Accéder au tableau de bord
+            </button>
+        </form>
+
+        <p class="text-center text-xs text-slate-400 mt-6">
+            <a href="{{ path('app_home') }}" class="hover:text-emerald-600">← Retour au site</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var digits = document.querySelectorAll('.pin-digit');
+
+        digits.forEach(function(input, index) {
+            input.addEventListener('input', function() {
+                var val = this.value.replace(/\D/g, '');
+                this.value = val.slice(-1);
+                if (val && index < digits.length - 1) {
+                    digits[index + 1].focus();
+                }
+                if (index === digits.length - 1 && val) {
+                    var allFilled = Array.from(digits).every(function(d) { return d.value !== ''; });
+                    if (allFilled) document.getElementById('pin-form').submit();
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    digits[index - 1].focus();
+                }
+                if (e.key === 'ArrowLeft' && index > 0) digits[index - 1].focus();
+                if (e.key === 'ArrowRight' && index < digits.length - 1) digits[index + 1].focus();
+            });
+
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                var paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                paste.split('').forEach(function(char, i) {
+                    if (digits[i]) digits[i].value = char;
+                });
+                var lastIndex = Math.min(paste.length, digits.length) - 1;
+                if (lastIndex >= 0) digits[lastIndex].focus();
+            });
+        });
+
+        if (digits[0]) digits[0].focus();
+    </script>
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MusLinks — Trouvez les professionnels qui partagent vos valeurs{% endblock %}
+
+{% block body %}
+
+{# ── HERO ── #}
+<section class="relative overflow-hidden flex items-center" style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%); min-height: 80vh;">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-hero'} %}
+
+    {# ── Bande drapeaux ── #}
+    <div class="absolute top-0 left-0 right-0 z-10 bg-black/5 backdrop-blur-[2px] border-b border-white/5 py-2.5">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="France">🇫🇷</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Belgique">🇧🇪</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Canada">🇨🇦</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-4xl" title="Suisse">🇨🇭</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Luxembourg">🇱🇺</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Maroc">🇲🇦</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Algérie">🇩🇿</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Tunisie">🇹🇳</span>
+            <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Liban">🇱🇧</span>
+        </div>
+    </div>
+
+    <div class="relative w-full max-w-4xl mx-auto px-4 sm:px-6 py-24 text-center">
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-6xl font-bold text-white leading-tight mb-4">
+            L'annuaire des professionnels<br class="hidden sm:block">
+            <span class="italic text-emerald-300">qui partagent vos valeurs</span>
+        </h1>
+
+        <p class="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
+            Médecins, avocats, artisans, boutiques en ligne… Trouvez un professionnel
+            vérifié près de chez vous, en quelques secondes.
+        </p>
+
+        <form action="{{ path('app_search') }}" method="GET" autocomplete="off"
+              class="max-w-3xl mx-auto mt-8">
+
+            {# ── Desktop : barre unifiée pill ── #}
+            <div class="hidden sm:flex items-stretch bg-white rounded-full shadow-2xl border border-slate-100" style="min-height:62px">
+
+                {# Pays #}
+                <div class="flex items-center pl-6 pr-4 border-r border-slate-100 rounded-l-full shrink-0">
+                    <select name="pays" id="home-pays"
+                            class="outline-none text-slate-700 text-sm bg-transparent cursor-pointer appearance-none font-medium">
+                        <option value="">🌍 Tous</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="BE">🇧🇪 Belgique</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="CH">🇨🇭 Suisse</option>
+                        <option value="LU">🇱🇺 Luxembourg</option>
+                        <option value="MA">🇲🇦 Maroc</option>
+                        <option value="DZ">🇩🇿 Algérie</option>
+                        <option value="TN">🇹🇳 Tunisie</option>
+                        <option value="LB">🇱🇧 Liban</option>
+                    </select>
+                </div>
+
+                {# Métier #}
+                <div class="flex-1 relative flex items-center border-r border-slate-100 hover:bg-slate-50/60 transition-colors">
+                    <div class="flex flex-col justify-center px-5 w-full">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Métier</span>
+                        <input type="text" name="q" id="home-q"
+                               placeholder="Médecin, avocat, boucher…" autocomplete="off"
+                               class="outline-none text-slate-800 text-sm bg-transparent placeholder-slate-300 w-full">
+                    </div>
+                    <div id="home-q-dropdown" class="autocomplete-dropdown hidden absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"></div>
+                </div>
+
+                {# Ville #}
+                <div class="flex-1 relative flex items-center hover:bg-slate-50/60 transition-colors">
+                    <div class="flex flex-col justify-center px-5 w-full">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Où ?</span>
+                        <input type="text" name="ville" id="home-ville"
+                               placeholder="Paris, Bruxelles, Montréal…" autocomplete="off"
+                               class="outline-none text-slate-800 text-sm bg-transparent placeholder-slate-300 w-full">
+                    </div>
+                    <button type="button" onclick="geolocate('home-ville')"
+                            class="mr-3 text-slate-300 hover:text-emerald-500 flex-shrink-0 transition-colors" title="Ma position">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
+                        </svg>
+                    </button>
+                    <div id="home-ville-dropdown" class="autocomplete-dropdown hidden absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"></div>
+                </div>
+
+                {# Bouton Rechercher #}
+                <div class="flex items-center p-2 rounded-r-full shrink-0">
+                    <button type="submit"
+                            class="bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-6 rounded-full shadow transition-all active:scale-95 whitespace-nowrap flex items-center justify-center gap-2 self-stretch">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Rechercher
+                    </button>
+                </div>
+
+            </div>
+
+            {# ── Mobile : cartes empilées ── #}
+            <div class="sm:hidden flex flex-col gap-3">
+
+                <div class="bg-white/95 rounded-2xl shadow-lg flex items-center px-4">
+                    <span class="text-lg mr-2 flex-shrink-0">🌍</span>
+                    <select name="pays"
+                            class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent cursor-pointer">
+                        <option value="">Tous les pays</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="BE">🇧🇪 Belgique</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="CH">🇨🇭 Suisse</option>
+                        <option value="LU">🇱🇺 Luxembourg</option>
+                        <option value="MA">🇲🇦 Maroc</option>
+                        <option value="DZ">🇩🇿 Algérie</option>
+                        <option value="TN">🇹🇳 Tunisie</option>
+                        <option value="LB">🇱🇧 Liban</option>
+                    </select>
+                </div>
+
+                <div class="relative bg-white/95 rounded-2xl shadow-lg flex items-center px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 flex-shrink-0 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" name="q" placeholder="Médecin, avocat, boucher…" autocomplete="off"
+                           class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400">
+                </div>
+
+                <div class="relative bg-white/95 rounded-2xl shadow-lg flex items-center px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 flex-shrink-0 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    </svg>
+                    <input type="text" name="ville" placeholder="Paris, Bruxelles, Montréal…" autocomplete="off"
+                           class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400">
+                    <button type="button" onclick="geolocate('home-ville')"
+                            class="text-emerald-500 hover:text-emerald-700 ml-2 flex-shrink-0 transition-colors" title="Ma position">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-semibold py-3.5 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Rechercher
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
+            {% for chip in ['Médecin', 'Avocat', 'Boucher', 'Plombier', 'Architecte', 'Comptable', 'Épicerie', 'Mosquée', 'Vêtements', 'Cosmétiques'] %}
+                <a href="{{ path('app_search', {q: chip}) }}"
+                   class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 text-xs px-3 py-1.5 rounded-full transition-all">
+                    {{ chip }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="mt-10">
+            <a href="{{ path('app_don') }}" class="inline-flex items-center gap-3 bg-emerald-900 border-2 border-emerald-700 hover:border-amber-400 px-8 py-4 rounded-2xl transition-colors animate-pulse hover:animate-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                <span class="text-base text-emerald-200">Soutenir <strong class="text-white">MusLinks</strong></span>
+            </a>
+        </div>
+    </div>
+</section>
+
+{# ── POURQUOI MUSLINKS ── #}
+<section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10">
+            <h2 class="font-serif text-3xl font-bold text-emerald-900">Pourquoi choisir MusLinks ?</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center bg-white rounded-2xl p-7 shadow-sm border border-emerald-100">
+                <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🤝</div>
+                <h3 class="font-semibold text-emerald-900 text-lg mb-2">Toute la communauté au même endroit</h3>
+                <p class="text-slate-500 text-sm">Médecins, avocats, artisans, boutiques en ligne… un seul annuaire, une seule recherche pour trouver le professionnel qu'il vous faut.</p>
+            </div>
+            <div class="text-center bg-white rounded-2xl p-7 shadow-sm border border-emerald-100">
+                <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🆓</div>
+                <h3 class="font-semibold text-emerald-900 text-lg mb-2">Inscription & hébergement 100% gratuits</h3>
+                <p class="text-slate-500 text-sm">Aucun abonnement, aucune carte bancaire. Le site est entièrement financé par les dons de la communauté. Ensemble, encore plus fort.</p>
+            </div>
+            <div class="text-center bg-white rounded-2xl p-7 shadow-sm border border-emerald-100">
+                <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">✅</div>
+                <h3 class="font-semibold text-emerald-900 text-lg mb-2">Fiche vérifiée SIRET</h3>
+                <p class="text-slate-500 text-sm">Chaque professionnel est contrôlé via le registre national officiel. Zéro faux profil, des mises en relation sûres et transparentes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+{# ── CTA FINALE ── #}
+<section style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);" class="relative overflow-hidden py-20">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-cta'} %}
+    <div class="relative max-w-3xl mx-auto px-4 text-center">
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
+            Rejoignez un réseau où votre<br>
+            <span class="italic text-emerald-300">réputation parle pour vous.</span>
+        </h2>
+        <p class="text-white/80 mb-8">Professionnels engagés, valeurs partagées, service bienveillant.</p>
+        <a href="{{ path('app_register') }}"
+           class="inline-flex items-center gap-2 bg-white text-emerald-700 hover:bg-emerald-50 font-semibold px-8 py-4 rounded-2xl transition-colors text-lg shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Inscrire ma société — Gratuitement
+        </a>
+        <p class="text-white/60 text-sm mt-4">Sans engagement · Fiche active sous 48h · SIRET vérifié</p>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Geolocation helper
+        function geolocate(inputId) {
+            if (!navigator.geolocation) return;
+            var btn = document.querySelector('[onclick="geolocate(\'' + inputId + '\')"]');
+            if (btn) btn.classList.add('animate-spin');
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    if (btn) btn.classList.remove('animate-spin');
+                    fetch('https://nominatim.openstreetmap.org/reverse?lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude + '&format=json&accept-language=fr')
+                        .then(function(r) { return r.json(); })
+                        .then(function(d) {
+                            var cp = d.address.postcode || '';
+                            var city = d.address.city || d.address.town || d.address.village || '';
+                            document.getElementById(inputId).value = cp || city;
+                        })
+                        .catch(function() { if (btn) btn.classList.remove('animate-spin'); });
+                },
+                function() { if (btn) btn.classList.remove('animate-spin'); }
+            );
+        }
+
+        // Autocomplete
+        var suggestUrl = '{{ path("api_suggestions") }}';
+        var acTimer = null;
+
+        function setupAutocomplete(inputId, dropdownId, field) {
+            var input = document.getElementById(inputId);
+            var dropdown = document.getElementById(dropdownId);
+            if (!input || !dropdown) return;
+
+            input.addEventListener('input', function() {
+                clearTimeout(acTimer);
+                var val = input.value.trim();
+                if (val.length < 2) { dropdown.classList.add('hidden'); return; }
+                acTimer = setTimeout(function() {
+                    var params = new URLSearchParams();
+                    params.set(field, val);
+                    fetch(suggestUrl + '?' + params.toString())
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            var items = field === 'q' ? (data.professions || []) : (data.villes || []);
+                            if (!items.length) { dropdown.classList.add('hidden'); return; }
+                            dropdown.innerHTML = '';
+                            items.forEach(function(s) {
+                                var btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.textContent = s;
+                                btn.style.cssText = 'display:block;width:100%;padding:0.5rem 1rem;text-align:left;font-size:0.875rem;color:#1e293b;background:none;border:none;border-bottom:1px solid #f0fdf4;cursor:pointer;font-family:inherit;';
+                                btn.addEventListener('mousedown', function(e) {
+                                    e.preventDefault();
+                                    input.value = field === 'ville' ? s.split(' (')[0] : s;
+                                    dropdown.classList.add('hidden');
+                                });
+                                btn.addEventListener('mouseenter', function() { btn.style.background = '#ecfdf5'; btn.style.color = '#059669'; });
+                                btn.addEventListener('mouseleave', function() { btn.style.background = 'none'; btn.style.color = '#1e293b'; });
+                                dropdown.appendChild(btn);
+                            });
+                            dropdown.classList.remove('hidden');
+                        })
+                        .catch(function() { dropdown.classList.add('hidden'); });
+                }, 250);
+            });
+
+            input.addEventListener('blur', function() {
+                setTimeout(function() { dropdown.classList.add('hidden'); }, 200);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAutocomplete('home-q', 'home-q-dropdown', 'q');
+            setupAutocomplete('home-ville', 'home-ville-dropdown', 'ville');
+
+            // Pré-sélection pays par langue/timezone navigateur
+            var supported = ['FR','BE','CA','CH','LU','MA','DZ','TN','LB'];
+            var lang = (navigator.language || '').toUpperCase().split('-')[1] || '';
+            var tzMap = {
+                'Europe/Paris':'FR','Europe/Brussels':'BE',
+                'America/Toronto':'CA','America/Montreal':'CA','America/Vancouver':'CA',
+                'Europe/Zurich':'CH','Europe/Luxembourg':'LU',
+                'Africa/Casablanca':'MA','Africa/Algiers':'DZ',
+                'Africa/Tunis':'TN','Asia/Beirut':'LB'
+            };
+            var detected = (supported.includes(lang) ? lang : null)
+                || tzMap[Intl.DateTimeFormat().resolvedOptions().timeZone]
+                || '';
+            if (detected) {
+                var sel = document.getElementById('home-pays');
+                if (sel) sel.value = detected;
+            }
+        });
+
+        // Counter animation
+        document.addEventListener('DOMContentLoaded', function() {
+            var counters = document.querySelectorAll('.counter');
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) return;
+                    var el = entry.target;
+                    var target = parseInt(el.dataset.target, 10);
+                    var duration = 1500;
+                    var step = target / (duration / 16);
+                    var current = 0;
+                    var timer = setInterval(function() {
+                        current += step;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        el.textContent = Math.round(current);
+                    }, 16);
+                    observer.unobserve(el);
+                });
+            }, { threshold: 0.3 });
+            counters.forEach(function(c) { observer.observe(c); });
+        });
+    </script>
+{% endblock %}

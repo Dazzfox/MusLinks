@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block title %}Email confirmé — MusLinks{% endblock %}
+
+{% block body %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-16">
+    <div class="max-w-md w-full text-center">
+
+        {% if auto_activated %}
+        <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h1 class="font-serif text-3xl font-bold text-emerald-900 mb-3">Votre fiche est en ligne !</h1>
+        <p class="text-slate-600 leading-relaxed mb-6">
+            Votre email est confirmé. Votre fiche est désormais
+            <strong class="text-emerald-700">visible dans l'annuaire</strong>.
+            {% if professional.siretValide %}
+            <br><span class="text-sm text-emerald-600">✓ SIRET vérifié dans le registre national</span>
+            {% endif %}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{{ path('app_professional_show', {id: professional.id}) }}"
+               class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                Voir ma fiche
+            </a>
+            <a href="{{ path('pro_login') }}"
+               class="inline-flex items-center justify-center gap-2 border border-emerald-300 text-emerald-700 hover:border-emerald-500 font-semibold px-6 py-3 rounded-xl transition-colors">
+                Mon espace pro
+            </a>
+        </div>
+
+        {% else %}
+        <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h1 class="font-serif text-3xl font-bold text-slate-800 mb-3">Email confirmé !</h1>
+        <p class="text-slate-600 leading-relaxed mb-4">
+            Votre adresse email est validée. Notre équipe examine maintenant votre dossier
+            et activera votre fiche sous <strong>48 heures ouvrées</strong>.
+        </p>
+        <a href="{{ path('app_home') }}"
+           class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+            Retour à l'accueil
+        </a>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

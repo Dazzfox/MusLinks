@@ -1,0 +1,318 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ professional.nomSociete }} — MusLinks{% endblock %}
+{% block description %}{{ professional.profession }} à {{ professional.ville }}. {{ professional.description|striptags|slice(0,160) }}{% endblock %}
+
+{% block body %}
+{% set isEcom = professional.isEcommerce() %}
+{% set colors = isEcom
+    ? ['6366f1','8b5cf6','a855f7','0ea5e9','ec4899','14b8a6']
+    : ['059669','0891b2','7c3aed','db2777','ea580c','65a30d'] %}
+{% set bgColor = colors[professional.id % 6] %}
+
+{# ── HEADER ── #}
+<div class="relative overflow-hidden" style="background: linear-gradient(135deg, {{ isEcom ? '#312e81' : '#064E3B' }} 0%, #{{ bgColor }} 100%);">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-pro'} %}
+    {% if professional.imageName %}
+        <img src="/uploads/professionals/{{ professional.imageName }}"
+             alt="{{ professional.nomSociete }}"
+             class="absolute inset-0 w-full h-full object-cover opacity-20">
+    {% endif %}
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <div class="flex flex-col sm:flex-row items-start gap-6">
+            {% if professional.imageName %}
+                <img src="/uploads/professionals/{{ professional.imageName }}"
+                     alt="{{ professional.nomSociete }}"
+                     class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-white shadow-xl flex-shrink-0">
+            {% else %}
+                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl flex items-center justify-center text-white font-serif font-bold text-3xl border-4 border-white shadow-xl flex-shrink-0"
+                     style="background-color: rgba(255,255,255,0.2);">
+                    {{ professional.getInitials() }}
+                </div>
+            {% endif %}
+
+            <div class="text-white">
+                <div class="flex flex-wrap gap-2 mb-2">
+                    {% include 'components/_badge_statut.html.twig' with {statut: professional.statut} %}
+                </div>
+                <h1 class="font-serif text-3xl sm:text-4xl font-bold">{{ professional.nomSociete }}</h1>
+                <p class="text-white/80 text-lg mt-1">{{ professional.profession ?? professional.domaineActivite }}</p>
+                <div class="flex items-center gap-1 mt-2">
+                    {% for i in 1..5 %}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ i <= professional.starsAverage ? 'text-yellow-300' : 'text-white/30' }}" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    {% endfor %}
+                    <span class="text-white/80 text-sm ml-1">{{ professional.starsAverage|number_format(1) }} ({{ professional.totalAvis }} avis)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── MAIN ── #}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {# ── LEFT COLUMN ── #}
+        <div class="lg:col-span-2 space-y-8">
+
+            {% if professional.description %}
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="font-serif text-xl font-bold text-emerald-900 mb-3">À propos</h2>
+                <p class="text-slate-600 leading-relaxed">{{ professional.description }}</p>
+            </div>
+            {% endif %}
+
+            {# ── AVIS ── #}
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="font-serif text-xl font-bold text-emerald-900 mb-4">Avis clients</h2>
+
+                {% set approvedReviews = professional.reviews|filter(r => r.isApproved) %}
+                {% if approvedReviews|length > 0 %}
+                    <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-6 p-4 bg-emerald-50 rounded-xl">
+                        <div class="text-center">
+                            <div class="font-serif text-5xl font-bold text-emerald-700">{{ professional.starsAverage|number_format(1) }}</div>
+                            <div class="flex justify-center mt-1">
+                                {% for i in 1..5 %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 {{ i <= professional.starsAverage ? 'text-emerald-600' : 'text-slate-200' }}" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                {% endfor %}
+                            </div>
+                            <div class="text-xs text-slate-500 mt-1">{{ professional.totalAvis }} avis</div>
+                        </div>
+                        <div class="flex-1 space-y-1">
+                            {% for star in 5..1 %}
+                                {% set starCount = approvedReviews|filter(r => r.note == star)|length %}
+                                {% set pct = professional.totalAvis > 0 ? (starCount / professional.totalAvis * 100)|round : 0 %}
+                                <div class="flex items-center gap-2 text-xs text-slate-500">
+                                    <span class="w-4 text-right">{{ star }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <div class="flex-1 bg-slate-100 rounded-full h-2">
+                                        <div class="bg-emerald-500 rounded-full h-2" style="width: {{ pct }}%"></div>
+                                    </div>
+                                    <span class="w-6">{{ starCount }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        {% for review in approvedReviews %}
+                            <div class="border-b border-emerald-50 pb-4 last:border-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-semibold text-sm">
+                                        {{ review.auteur|slice(0,1)|upper }}
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-sm text-slate-800">{{ review.auteur }}</span>
+                                        <span class="text-xs text-slate-400 ml-2">{{ review.createdAt|date('d/m/Y') }}</span>
+                                    </div>
+                                    <div class="ml-auto flex">
+                                        {% for i in 1..5 %}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 {{ i <= review.note ? 'text-emerald-600' : 'text-slate-200' }}" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <p class="text-sm text-slate-600 leading-relaxed">{{ review.commentaire }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-slate-400 text-sm">Aucun avis approuvé pour le moment. Soyez le premier !</p>
+                {% endif %}
+
+                {# ── FORMULAIRE AVIS ── #}
+                <div class="mt-8 pt-6 border-t border-emerald-100">
+                    <h3 class="font-semibold text-emerald-900 mb-4">Laisser un avis</h3>
+                    {{ form_start(review_form, {action: path('app_review_submit', {id: professional.id}), method: 'POST', attr: {class: 'space-y-4'}}) }}
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Votre note *</label>
+                        <div class="flex gap-1" id="star-picker">
+                            {% for i in 1..5 %}
+                                <button type="button" onclick="setNote({{ i }})"
+                                        data-star="{{ i }}"
+                                        class="star-btn text-3xl text-slate-200 hover:text-emerald-400 transition-colors focus:outline-none">★</button>
+                            {% endfor %}
+                        </div>
+                        {{ form_widget(review_form.note, {attr: {id: 'review-note-input', value: 5}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(review_form.auteur, null, {label_attr: {class: 'block text-sm font-medium text-slate-700 mb-1'}}) }}
+                        {{ form_widget(review_form.auteur, {attr: {class: 'w-full px-4 py-2.5 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-sm'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(review_form.commentaire, null, {label_attr: {class: 'block text-sm font-medium text-slate-700 mb-1'}}) }}
+                        {{ form_widget(review_form.commentaire, {attr: {class: 'w-full px-4 py-2.5 rounded-xl border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none text-sm', rows: 4}}) }}
+                        {{ form_errors(review_form.commentaire) }}
+                    </div>
+
+                    <button type="submit"
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl transition-colors active:scale-95">
+                        Envoyer mon avis
+                    </button>
+                    {{ form_end(review_form) }}
+                </div>
+            </div>
+        </div>
+
+        {# ── RIGHT COLUMN ── #}
+        <div class="space-y-5">
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="font-semibold text-emerald-900 mb-4">Coordonnées</h3>
+                <ul class="space-y-3 text-sm">
+
+                    {% if professional.siteEcommerce %}
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <div>
+                            <div class="text-xs text-slate-400 mb-1">Boutique en ligne</div>
+                            <a href="{{ professional.siteEcommerce }}" target="_blank" rel="noopener"
+                               class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors">
+                                Visiter la boutique →
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if professional.telephone %}
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        <a href="tel:{{ professional.telephone }}" class="text-emerald-700 hover:text-emerald-900 font-medium">{{ professional.telephone }}</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <a href="mailto:{{ professional.email }}" class="text-emerald-700 hover:text-emerald-900 break-all">{{ professional.email }}</a>
+                    </li>
+
+                    {% if professional.adresseRue %}
+                    {% set mapsQuery = (professional.adresseRue ~ ' ' ~ professional.codePostal ~ ' ' ~ professional.ville ~ ' France')|url_encode %}
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        </svg>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ mapsQuery }}"
+                           target="_blank" rel="noopener"
+                           class="text-emerald-700 hover:text-emerald-900 hover:underline transition-colors">
+                            {{ professional.adresseRue }}<br>{{ professional.codePostal }} {{ professional.ville }}
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if professional.siteWeb %}
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+                        </svg>
+                        <a href="{{ professional.siteWeb }}" target="_blank" rel="noopener" class="text-emerald-700 hover:text-emerald-900 break-all">{{ professional.siteWeb|replace({'https://': '', 'http://': ''}) }}</a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+
+            {% if professional.siret %}
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="font-semibold text-emerald-900 mb-3">SIRET</h3>
+                <div class="flex items-center gap-2">
+                    <code class="font-mono text-sm bg-emerald-50 text-emerald-800 px-3 py-2 rounded-lg flex-1">{{ professional.getSiretFormatted() }}</code>
+                    <button onclick="copySiret('{{ professional.siret }}')"
+                            class="p-2 text-slate-500 hover:text-emerald-700 transition-colors" title="Copier">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    Fiche vérifiée
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 class="font-semibold text-emerald-900 mb-3 text-sm">Domaine</h3>
+                <span class="inline-block bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">{{ professional.domaineActivite }}</span>
+            </div>
+
+            {% if professional.dateInscription %}
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <p class="text-xs text-slate-400">Inscrit le {{ professional.dateInscription|date('d/m/Y') }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# ── STICKY MOBILE BAR ── #}
+<div class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-emerald-100 p-3 sm:hidden">
+    <div class="flex gap-2">
+        {% if isEcom and professional.siteEcommerce %}
+            <a href="{{ professional.siteEcommerce }}" target="_blank" rel="noopener"
+               class="flex-1 flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl text-sm font-medium">
+                🛒 Visiter la boutique
+            </a>
+        {% elseif professional.telephone %}
+            <a href="tel:{{ professional.telephone }}"
+               class="flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl text-sm font-medium">
+                📞 Appeler
+            </a>
+        {% endif %}
+        {% if professional.adresseRue %}
+            <a href="https://www.google.com/maps/search/?api=1&query={{ (professional.adresseRue ~ ' ' ~ professional.ville ~ ' France')|url_encode }}"
+               target="_blank" rel="noopener"
+               class="px-4 py-3 border border-emerald-200 text-emerald-700 rounded-xl text-sm">🗺️</a>
+        {% endif %}
+        <button onclick="sharePage()" class="px-4 py-3 border border-emerald-200 text-emerald-700 rounded-xl text-sm">📤</button>
+    </div>
+</div>
+<div class="h-20 sm:hidden"></div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function setNote(n) {
+            document.getElementById('review-note-input').value = n;
+            document.querySelectorAll('.star-btn').forEach(function(btn) {
+                btn.style.color = parseInt(btn.dataset.star) <= n ? '#059669' : '#e2e8f0';
+            });
+        }
+        setNote(5);
+
+        function copySiret(siret) {
+            navigator.clipboard.writeText(siret).then(function() {
+                var t = document.createElement('div');
+                t.className = 'fixed bottom-24 right-4 z-50 bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm shadow-lg';
+                t.textContent = 'SIRET copié !';
+                document.body.appendChild(t);
+                setTimeout(function() { t.remove(); }, 2000);
+            });
+        }
+
+        function sharePage() {
+            if (navigator.share) {
+                navigator.share({ title: '{{ professional.nomSociete|e("js") }}', url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    alert('Lien copié !');
+                });
+            }
+        }
+    </script>
+{% endblock %}

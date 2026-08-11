@@ -1,0 +1,218 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon tableau de bord — MusLinks{% endblock %}
+
+{% block body %}
+<div class="relative overflow-hidden py-10 px-4" style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%);">
+    {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-pro-dash'} %}
+    <div class="relative max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            {% if professional.imageName %}
+                <img src="/uploads/professionals/{{ professional.imageName }}"
+                     alt="{{ professional.nomSociete }}"
+                     class="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-lg">
+            {% else %}
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-serif font-bold text-2xl border-2 border-white/30 shadow-lg"
+                     style="background: rgba(255,255,255,0.15);">
+                    {{ professional.getInitials() }}
+                </div>
+            {% endif %}
+            <div>
+                <p class="text-emerald-300 text-sm font-medium">Bonjour,</p>
+                <h1 class="font-serif text-2xl font-bold text-white">{{ professional.prenomResponsable ? professional.prenomResponsable ~ ' ' ~ professional.nomResponsable : professional.nomSociete }}</h1>
+                <p class="text-white/70 text-sm">{{ professional.nomSociete }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ path('app_professional_show', {id: professional.id}) }}" target="_blank"
+               class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                Voir ma fiche
+            </a>
+            <form method="POST" action="{{ path('pro_logout') }}">
+                <button type="submit"
+                        class="inline-flex items-center gap-2 bg-white/10 hover:bg-red-500/30 text-white/80 hover:text-white text-sm px-4 py-2 rounded-xl transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Déconnexion
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+
+    {% for msg in app.flashes('success') %}
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ msg }}
+        </div>
+    {% endfor %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {# ── Statut de la fiche ── #}
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50">
+                <h2 class="font-serif text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Statut de votre fiche
+                </h2>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-4">
+                    <div class="bg-emerald-50 rounded-xl p-3">
+                        <div class="font-serif text-2xl font-bold text-emerald-700">{{ professional.starsAverage|number_format(1) }}</div>
+                        <div class="text-xs text-slate-500 mt-0.5">Note moyenne</div>
+                    </div>
+                    <div class="bg-emerald-50 rounded-xl p-3">
+                        <div class="font-serif text-2xl font-bold text-emerald-700">{{ professional.totalAvis }}</div>
+                        <div class="text-xs text-slate-500 mt-0.5">Avis clients</div>
+                    </div>
+                    <div class="rounded-xl p-3 {% if professional.statut == 'ACTIF' %}bg-green-50{% elseif professional.statut == 'EN_ATTENTE' %}bg-amber-50{% else %}bg-red-50{% endif %}">
+                        <div class="font-bold text-sm {% if professional.statut == 'ACTIF' %}text-green-700{% elseif professional.statut == 'EN_ATTENTE' %}text-amber-700{% else %}text-red-700{% endif %}">
+                            {% if professional.statut == 'ACTIF' %}✓ Active
+                            {% elseif professional.statut == 'EN_ATTENTE' %}⏳ En attente
+                            {% elseif professional.statut == 'RENOUVELLEMENT' %}⚠️ Renouvellement
+                            {% else %}✗ Radiée{% endif %}
+                        </div>
+                        <div class="text-xs text-slate-500 mt-0.5">Statut</div>
+                    </div>
+                </div>
+
+            </div>
+
+            {# ── Infos actuelles ── #}
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif text-lg font-bold text-emerald-900">Mes informations</h2>
+                    <a href="{{ path('pro_edit') }}"
+                       class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Modifier
+                    </a>
+                </div>
+
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Société</dt>
+                        <dd class="font-medium text-slate-800">{{ professional.nomSociete }}</dd>
+                    </div>
+                    {% if professional.prenomResponsable %}
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Responsable</dt>
+                        <dd class="font-medium text-slate-800">{{ professional.prenomResponsable }} {{ professional.nomResponsable }}</dd>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Domaine</dt>
+                        <dd class="text-slate-600">{{ professional.domaineActivite }}</dd>
+                    </div>
+                    {% if professional.profession %}
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Profession</dt>
+                        <dd class="text-slate-600">{{ professional.profession }}</dd>
+                    </div>
+                    {% endif %}
+                    {% if professional.telephone %}
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Téléphone</dt>
+                        <dd class="text-slate-600">{{ professional.telephone }}</dd>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Email</dt>
+                        <dd class="text-slate-600 break-all">{{ professional.email }}</dd>
+                    </div>
+                    {% if professional.siteEcommerce %}
+                    <div class="sm:col-span-2">
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Boutique en ligne</dt>
+                        <dd><a href="{{ professional.siteEcommerce }}" target="_blank" rel="noopener" class="text-indigo-600 hover:underline break-all text-sm">{{ professional.siteEcommerce }}</a></dd>
+                    </div>
+                    {% endif %}
+                    {% if professional.adresseRue %}
+                    <div class="sm:col-span-2">
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Adresse</dt>
+                        <dd class="text-slate-600">{{ professional.adresseRue }}, {{ professional.codePostal }} {{ professional.ville }}</dd>
+                    </div>
+                    {% endif %}
+                    {% if professional.description %}
+                    <div class="sm:col-span-2">
+                        <dt class="text-xs text-slate-400 uppercase tracking-wide mb-0.5">Description</dt>
+                        <dd class="text-slate-600 leading-relaxed">{{ professional.description|slice(0, 200) }}{% if professional.description|length > 200 %}…{% endif %}</dd>
+                    </div>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        {# ── Colonne droite ── #}
+        <div class="space-y-5">
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-50">
+                <h3 class="font-semibold text-emerald-900 text-sm mb-3">Présence en ligne</h3>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2 {% if professional.siteWeb %}text-emerald-700{% else %}text-slate-400{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+                        </svg>
+                        {% if professional.siteWeb %}
+                            <a href="{{ professional.siteWeb }}" target="_blank" class="hover:underline truncate">Site web ✓</a>
+                        {% else %}
+                            Site web — <a href="{{ path('pro_edit') }}" class="text-emerald-600 hover:underline">Ajouter</a>
+                        {% endif %}
+                    </li>
+                    <li class="flex items-center gap-2 {% if professional.siteEcommerce %}text-indigo-700{% else %}text-slate-400{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        {% if professional.siteEcommerce %}
+                            <a href="{{ professional.siteEcommerce }}" target="_blank" class="hover:underline truncate">Boutique en ligne ✓</a>
+                        {% else %}
+                            E-commerce — <a href="{{ path('pro_edit') }}" class="text-emerald-600 hover:underline">Ajouter</a>
+                        {% endif %}
+                    </li>
+                    <li class="flex items-center gap-2 {% if professional.imageName %}text-emerald-700{% else %}text-slate-400{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {% if professional.imageName %}
+                            Photo / Logo ✓
+                        {% else %}
+                            Photo — <a href="{{ path('pro_edit') }}" class="text-emerald-600 hover:underline">Ajouter</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+
+            {% if professional.siret %}
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-50">
+                <h3 class="font-semibold text-emerald-900 text-sm mb-3">SIRET</h3>
+                <code class="font-mono text-xs bg-emerald-50 text-emerald-800 px-3 py-2 rounded-lg block">{{ professional.getSiretFormatted() }}</code>
+            </div>
+            {% endif %}
+
+            <a href="{{ path('pro_edit') }}"
+               class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all">
+                ✏️ Modifier mes informations
+            </a>
+
+            <a href="{{ path('app_contact') }}"
+               class="block w-full text-center border border-emerald-200 hover:border-emerald-400 text-emerald-700 text-sm font-medium py-2.5 rounded-xl transition-colors">
+                Contacter l'équipe MusLinks
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

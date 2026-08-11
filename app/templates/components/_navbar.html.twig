@@ -1,0 +1,189 @@
+<nav id="main-nav" class="sticky top-0 z-40 transition-all duration-300" style="background: linear-gradient(90deg, #064e3b 0%, #059669 60%, #34d399 100%); box-shadow: 0 2px 12px rgba(5,150,105,0.18);">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-[68px]">
+
+            {# ── Logo ── #}
+            <a href="{{ path('app_home') }}" class="flex items-center gap-3 group">
+                <svg width="44" height="44" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <defs>
+                        <radialGradient id="nav-bg" cx="30%" cy="25%" r="75%">
+                            <stop offset="0%" stop-color="#10b981"/>
+                            <stop offset="100%" stop-color="#064e3b"/>
+                        </radialGradient>
+                        <mask id="nav-crescent">
+                            <rect width="200" height="200" fill="white"/>
+                            <circle cx="126" cy="80" r="62" fill="black"/>
+                        </mask>
+                        <filter id="nav-glow">
+                            <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.3)"/>
+                        </filter>
+                    </defs>
+                    <!-- Cercle fond émeraude -->
+                    <circle cx="100" cy="100" r="96" fill="url(#nav-bg)" filter="url(#nav-glow)"/>
+                    <!-- Bordure blanche fine -->
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2.5"/>
+                    <!-- Croissant doré -->
+                    <circle cx="94" cy="108" r="64" fill="#FCD34D" mask="url(#nav-crescent)"/>
+                    <!-- ML petit en haut à droite -->
+                    <text x="122" y="88" text-anchor="middle" dominant-baseline="central"
+                          font-family="Georgia,'Times New Roman',serif"
+                          font-size="28" font-weight="bold" font-style="italic"
+                          fill="#FCD34D" letter-spacing="-1">ML</text>
+                </svg>
+                <div>
+                    <div class="font-serif font-bold text-white text-xl leading-tight group-hover:text-emerald-100 transition-colors">MusLinks</div>
+                    <div class="text-[10px] text-emerald-200 font-semibold tracking-[0.2em] uppercase leading-none">Votre réseau de confiance</div>
+                </div>
+            </a>
+
+            {# ── Nav desktop ── #}
+            <div class="hidden md:flex items-center gap-6">
+                <a href="{{ path('app_home') }}"
+                   class="relative text-sm font-medium text-white/90 hover:text-white transition-colors duration-200 group">
+                    Accueil
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-white rounded-full group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="{{ path('app_map') }}"
+                   class="relative text-sm font-medium text-white/90 hover:text-white transition-colors duration-200 group">
+                    Carte
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-white rounded-full group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="{{ path('app_contact') }}"
+                   class="relative text-sm font-medium text-white/90 hover:text-white transition-colors duration-200 group">
+                    Contact
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-white rounded-full group-hover:w-full transition-all duration-300"></span>
+                </a>
+            </div>
+
+            {# ── Espace professionnel dropdown ── #}
+            <div class="flex items-center gap-3">
+                <div class="relative hidden sm:block" id="pro-dropdown-wrapper">
+                    <button id="pro-dropdown-btn"
+                            class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/40 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 backdrop-blur-sm"
+                            aria-haspopup="true" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        Espace professionnel
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform duration-200" id="pro-dropdown-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    {# Dropdown panel #}
+                    <div id="pro-dropdown-menu"
+                         class="hidden absolute right-0 mt-3 w-72 bg-white rounded-2xl overflow-hidden z-50"
+                         style="box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05);">
+
+                        <div class="px-5 pt-4 pb-3 border-b border-slate-100">
+                            <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest">Espace professionnel</p>
+                        </div>
+
+                        <div class="p-2 space-y-0.5">
+                            <a href="{{ path('app_don') }}"
+                               class="flex items-center gap-3 px-3 py-3 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all group">
+                                <span class="w-9 h-9 bg-amber-50 group-hover:bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">❤️</span>
+                                <div>
+                                    <div class="font-semibold">Soutenir MusLinks</div>
+                                    <div class="text-xs text-slate-400">Soutenir le projet</div>
+                                </div>
+                            </a>
+                            <a href="{{ path('app_register') }}"
+                               class="flex items-center gap-3 px-3 py-3 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all group">
+                                <span class="w-9 h-9 bg-emerald-50 group-hover:bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">✦</span>
+                                <div>
+                                    <div class="font-semibold">Créer mon annonce</div>
+                                    <div class="text-xs text-slate-400">Inscrire ma société gratuitement</div>
+                                </div>
+                            </a>
+                            <a href="{{ path('pro_dashboard') }}"
+                               class="flex items-center gap-3 px-3 py-3 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all group">
+                                <span class="w-9 h-9 bg-emerald-50 group-hover:bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">👤</span>
+                                <div>
+                                    <div class="font-semibold">Mon espace</div>
+                                    <div class="text-xs text-slate-400">Gérer et modifier ma fiche</div>
+                                </div>
+                            </a>
+                            <div class="mx-3 my-1 border-t border-slate-100"></div>
+                            <a href="{{ path('admin_login') }}"
+                               class="flex items-center gap-3 px-3 py-3 text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-700 rounded-xl transition-all group">
+                                <span class="w-9 h-9 bg-slate-50 group-hover:bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors">🔑</span>
+                                <div class="font-medium">Connexion admin</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {# Bouton hamburger mobile #}
+                <button id="nav-toggle" class="md:hidden p-2 rounded-xl text-white hover:bg-white/20 transition-colors" aria-label="Menu">
+                    <svg id="nav-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg id="nav-icon-close" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {# ── Menu mobile ── #}
+    <div id="nav-mobile" class="hidden md:hidden bg-white border-t border-slate-100">
+        <div class="px-4 py-4 space-y-1">
+            <a href="{{ path('app_home') }}"    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 text-sm font-medium transition-colors">Accueil</a>
+            <a href="{{ path('app_map') }}"     class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 text-sm font-medium transition-colors">Carte</a>
+            <a href="{{ path('app_contact') }}" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 text-sm font-medium transition-colors">Contact</a>
+            <div class="pt-2 border-t border-slate-100">
+                <p class="px-4 py-1 text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Espace professionnel</p>
+                <a href="{{ path('app_don') }}"        class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 text-sm transition-colors">❤️ Soutenir MusLinks</a>
+                <a href="{{ path('app_register') }}"   class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 text-sm transition-colors">✦ Créer mon annonce</a>
+                <a href="{{ path('pro_dashboard') }}"  class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-emerald-50 text-sm transition-colors">👤 Mon espace</a>
+                <a href="{{ path('admin_login') }}"    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-400 hover:bg-slate-50 text-sm transition-colors">🔑 Connexion admin</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 10) {
+            nav.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+        } else {
+            nav.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)';
+        }
+    });
+
+    const btn   = document.getElementById('nav-toggle');
+    const menu  = document.getElementById('nav-mobile');
+    const iconO = document.getElementById('nav-icon-open');
+    const iconC = document.getElementById('nav-icon-close');
+    if (btn) btn.addEventListener('click', () => {
+        const open = menu.classList.toggle('hidden');
+        iconO.classList.toggle('hidden', !open);
+        iconC.classList.toggle('hidden', open);
+    });
+
+    const dropBtn  = document.getElementById('pro-dropdown-btn');
+    const dropMenu = document.getElementById('pro-dropdown-menu');
+    const chevron  = document.getElementById('pro-dropdown-chevron');
+
+    if (dropBtn && dropMenu) {
+        dropBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = !dropMenu.classList.contains('hidden');
+            dropMenu.classList.toggle('hidden', isOpen);
+            chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+            dropBtn.setAttribute('aria-expanded', String(!isOpen));
+        });
+        document.addEventListener('click', function() {
+            dropMenu.classList.add('hidden');
+            chevron.style.transform = '';
+            dropBtn.setAttribute('aria-expanded', 'false');
+        });
+        dropMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+    }
+})();
+</script>
