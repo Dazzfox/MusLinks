@@ -30,7 +30,7 @@
     </div>
 
     <div class="body">
-        <h1>Bonjour {{ professional.prenomResponsable }} 👋</h1>
+        <h1>Bonjour {{ professional.prenomResponsable ?: professional.nomSociete }} 👋</h1>
         <p>Vous avez demandé à accéder à votre espace professionnel MusLinks pour <strong>{{ professional.nomSociete }}</strong>.</p>
         <p>Cliquez sur le bouton ci-dessous pour vous connecter :</p>
 

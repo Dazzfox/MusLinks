@@ -63,12 +63,14 @@ class ProEditType extends AbstractType
         if (!$isEcommerce) {
             $builder
                 ->add('prenomResponsable', TextType::class, [
-                    'label' => 'Prénom du responsable',
-                    'attr'  => ['class' => 'form-input'],
+                    'label'    => 'Prénom du responsable',
+                    'required' => false,
+                    'attr'     => ['class' => 'form-input'],
                 ])
                 ->add('nomResponsable', TextType::class, [
-                    'label' => 'Nom du responsable',
-                    'attr'  => ['class' => 'form-input'],
+                    'label'    => 'Nom du responsable',
+                    'required' => false,
+                    'attr'     => ['class' => 'form-input'],
                 ])
                 ->add('profession', TextType::class, [
                     'label' => 'Profession / Titre',

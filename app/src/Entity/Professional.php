@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProfessionalRepository::class)]
@@ -35,6 +36,12 @@ class Professional
     public const TYPE_PHYSIQUE  = 'PHYSIQUE';
     public const TYPE_ECOMMERCE = 'ECOMMERCE';
 
+    // Domaines où l'identité du praticien fait partie du service (professions réglementées
+    // exercées au nom d'une personne) — le nom/prénom du responsable y est obligatoire.
+    // Pour les autres commerces (épicier, boucher, artisan…), c'est l'enseigne qui compte,
+    // le nom du responsable reste facultatif.
+    public const DOMAINES_IDENTITE_REQUISE = ['Santé', 'Droit & Conseil'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -45,12 +52,11 @@ class Professional
     #[Assert\Length(max: 255)]
     private ?string $nomSociete = null;
 
+    // Obligatoire uniquement pour les domaines réglementés — cf. validateResponsable() ci-dessous.
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\NotBlank(message: 'Le nom du responsable est obligatoire.', groups: ['physical'])]
     private ?string $nomResponsable = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\NotBlank(message: 'Le prénom du responsable est obligatoire.', groups: ['physical'])]
     private ?string $prenomResponsable = null;
 
     #[ORM\Column(length: 100)]
@@ -169,6 +175,26 @@ class Professional
     public function onPreUpdate(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[Assert\Callback]
+    public function validateResponsable(ExecutionContextInterface $context): void
+    {
+        if ($this->type !== self::TYPE_PHYSIQUE || !in_array($this->domaineActivite, self::DOMAINES_IDENTITE_REQUISE, true)) {
+            return;
+        }
+
+        if (!$this->nomResponsable) {
+            $context->buildViolation('Le nom du responsable est obligatoire pour ce domaine (profession réglementée).')
+                ->atPath('nomResponsable')
+                ->addViolation();
+        }
+
+        if (!$this->prenomResponsable) {
+            $context->buildViolation('Le prénom du responsable est obligatoire pour ce domaine (profession réglementée).')
+                ->atPath('prenomResponsable')
+                ->addViolation();
+        }
     }
 
     public function getId(): ?int { return $this->id; }

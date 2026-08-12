@@ -44,11 +44,13 @@ class ProfessionalType extends AbstractType
                 'attr' => ['placeholder' => 'Ex : Cabinet Médical Santé+', 'class' => 'form-input'],
             ])
             ->add('nomResponsable', TextType::class, [
-                'label' => 'Nom *',
+                'label' => 'Nom',
+                'required' => false,
                 'attr' => ['placeholder' => 'Votre nom', 'class' => 'form-input'],
             ])
             ->add('prenomResponsable', TextType::class, [
-                'label' => 'Prénom *',
+                'label' => 'Prénom',
+                'required' => false,
                 'attr' => ['placeholder' => 'Votre prénom', 'class' => 'form-input'],
             ])
             ->add('genre', ChoiceType::class, [
