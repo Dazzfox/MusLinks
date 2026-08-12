@@ -31,6 +31,8 @@ class ApiController extends AbstractController
         return new JsonResponse($data);
     }
 
+    private const RESULTS_PER_PAGE = 16;
+
     #[Route('/search', name: 'api_search', methods: ['GET'])]
     public function search(Request $request, ProfessionalRepository $repo): JsonResponse
     {
@@ -41,8 +43,11 @@ class ApiController extends AbstractController
         $pays    = trim($request->query->get('pays', ''));
         $domaine = trim($request->query->get('domaine', ''));
         $tri     = trim($request->query->get('tri', 'createdAt'));
+        $page    = max(1, (int) $request->query->get('page', 1));
 
-        $professionals = $repo->searchJson($query, $ville, $genre, $type, $pays, $tri, $domaine);
+        $allMatches = $repo->searchJson($query, $ville, $genre, $type, $pays, $tri, $domaine);
+        $total = count($allMatches);
+        $professionals = array_slice($allMatches, ($page - 1) * self::RESULTS_PER_PAGE, self::RESULTS_PER_PAGE);
 
         $results = array_map(fn($p) => [
             'id'             => $p->getId(),
@@ -64,7 +69,13 @@ class ApiController extends AbstractController
             'mapsUrl'        => 'https://www.google.com/maps/search/?api=1&query=' . urlencode($p->getAdresseRue() . ' ' . $p->getVille() . ' ' . $p->getCodePostal()),
         ], $professionals);
 
-        return new JsonResponse(['results' => $results, 'count' => count($results)]);
+        return new JsonResponse([
+            'results'  => $results,
+            'count'    => count($results),
+            'total'    => $total,
+            'page'     => $page,
+            'hasMore'  => $total > $page * self::RESULTS_PER_PAGE,
+        ]);
     }
 
     #[Route('/professionals', name: 'api_professionals', methods: ['GET'])]

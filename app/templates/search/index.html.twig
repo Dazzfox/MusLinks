@@ -170,6 +170,12 @@
         </div>
     </div>
 
+    <div id="load-more-wrap" class="hidden text-center mt-8">
+        <button id="load-more-btn" type="button" class="bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 font-semibold px-6 py-2.5 rounded-xl transition-colors">
+            Voir plus de résultats
+        </button>
+    </div>
+
     <div id="empty-state" class="hidden text-center py-20">
         <div class="text-5xl mb-4">🔍</div>
         <h3 class="font-serif text-xl font-bold text-emerald-900 mb-2">Aucun résultat trouvé</h3>
@@ -204,8 +210,9 @@
         var countryFlags = { FR:'🇫🇷', BE:'🇧🇪', CA:'🇨🇦', CH:'🇨🇭', LU:'🇱🇺', MA:'🇲🇦', DZ:'🇩🇿', TN:'🇹🇳', LB:'🇱🇧' };
         var searchUrl = '{{ path("api_search") }}';
         var suggestUrl = '{{ path("api_suggestions") }}';
-        var debounceTimer = null;
         var acTimer = null;
+        var currentPage = 1;
+        var hasMoreResults = false;
 
         function getStars(avg) {
             var html = '<div class="flex items-center gap-0.5">';
@@ -382,43 +389,66 @@
             return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
         }
 
-        function doSearch() {
+        function doSearch(append) {
             var q = document.getElementById('search-q').value;
             var ville = document.getElementById('search-ville').value;
             var sort = document.getElementById('sort-select').value;
-            var params = new URLSearchParams({ q: q, ville: ville, domaine: currentDomaine, genre: currentGenre, type: currentType, pays: currentPays, tri: sort });
+            currentPage = append ? currentPage + 1 : 1;
+            var params = new URLSearchParams({ q: q, ville: ville, domaine: currentDomaine, genre: currentGenre, type: currentType, pays: currentPays, tri: sort, page: currentPage });
             var container = document.getElementById('results-container');
             var empty = document.getElementById('empty-state');
             var count = document.getElementById('results-count');
+            var loadMoreWrap = document.getElementById('load-more-wrap');
+            var loadMoreBtn = document.getElementById('load-more-btn');
 
-            container.innerHTML = '<div class="col-span-full text-center py-20"><div class="w-10 h-10 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto"></div></div>';
-            empty.classList.add('hidden');
+            if (append) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Chargement…';
+            } else {
+                container.innerHTML = '<div class="col-span-full text-center py-20"><div class="w-10 h-10 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto"></div></div>';
+                empty.classList.add('hidden');
+                loadMoreWrap.classList.add('hidden');
+            }
 
             fetch(searchUrl + '?' + params.toString())
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     var results = data.results || [];
+                    var total = data.total || 0;
+                    hasMoreResults = !!data.hasMore;
                     var label = currentType === 'ECOMMERCE' ? 'boutique' : 'professionnel';
                     var labelPlural = currentType === 'ECOMMERCE' ? 'boutiques' : 'professionnels';
-                    count.textContent = results.length + ' ' + (results.length > 1 ? labelPlural : label) + ' trouvé' + (results.length > 1 ? 's' : '');
+                    count.textContent = total + ' ' + (total > 1 ? labelPlural : label) + ' trouvé' + (total > 1 ? 's' : '');
                     count.classList.remove('hidden');
 
-                    if (results.length === 0) {
+                    if (total === 0) {
                         container.innerHTML = '';
                         empty.classList.remove('hidden');
+                        loadMoreWrap.classList.add('hidden');
                         return;
                     }
 
-                    // Le nombre de colonnes s'adapte au nombre de résultats : avec un seul
-                    // résultat par ex., pas la peine de réserver 4 colonnes vides sur grand écran.
-                    container.className = 'grid gap-5 ' + gridColsClass(results.length);
-
-                    container.innerHTML = results.map(function(p, i) {
+                    var cardsHtml = results.map(function(p, i) {
                         return '<div class="w-full max-w-md" style="animation:fadeInUp .3s ease both;animation-delay:' + (i * 30) + 'ms">' + renderCard(p) + '</div>';
                     }).join('');
+
+                    if (append) {
+                        container.insertAdjacentHTML('beforeend', cardsHtml);
+                    } else {
+                        // Le nombre de colonnes s'adapte au nombre de résultats de la page : avec un
+                        // seul résultat par ex., pas la peine de réserver 4 colonnes vides.
+                        container.className = 'grid gap-5 ' + gridColsClass(results.length);
+                        container.innerHTML = cardsHtml;
+                    }
+
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Voir plus de résultats';
+                    loadMoreWrap.classList.toggle('hidden', !hasMoreResults);
                 })
                 .catch(function() {
-                    container.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Erreur lors de la recherche.</div>';
+                    if (!append) container.innerHTML = '<div class="col-span-full text-center py-10 text-red-500">Erreur lors de la recherche.</div>';
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Voir plus de résultats';
                 });
         }
 
@@ -462,18 +492,13 @@
             doSearch();
         }
 
-        document.getElementById('search-q').addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(doSearch, 300);
-        });
-        document.getElementById('search-ville').addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(doSearch, 300);
-        });
-        document.getElementById('sort-select').addEventListener('change', doSearch);
+        document.getElementById('sort-select').addEventListener('change', function() { doSearch(); });
         document.getElementById('search-form').addEventListener('submit', function(e) {
             e.preventDefault();
             doSearch();
+        });
+        document.getElementById('load-more-btn').addEventListener('click', function() {
+            doSearch(true);
         });
         document.getElementById('gps-btn').addEventListener('click', function() {
             if (!navigator.geolocation) return;

@@ -87,6 +87,10 @@ class ProfessionalRepository extends ServiceEntityRepository
 
     private const SEARCH_ALLOWED_TRI = ['nomSociete', 'ville', 'profession', 'starsAverage', 'createdAt'];
 
+    // Plafond de sécurité sur ce que la requête SQL ramène en mémoire — la pagination
+    // réelle (page/perPage) se fait ensuite côté contrôleur sur ce tableau déjà chargé.
+    private const MAX_RESULTS = 200;
+
     public function searchJson(
         string $query = '',
         string $ville = '',
@@ -215,7 +219,7 @@ class ProfessionalRepository extends ServiceEntityRepository
         $direction = $tri === 'starsAverage' ? 'DESC' : 'ASC';
         $qb->orderBy('p.' . $tri, $direction);
 
-        return $qb->setMaxResults(50)->getQuery()->getResult();
+        return $qb->setMaxResults(self::MAX_RESULTS)->getQuery()->getResult();
     }
 
     /**
@@ -272,7 +276,7 @@ class ProfessionalRepository extends ServiceEntityRepository
             $params['domaine'] = $domaine;
         }
 
-        $sql .= ' ORDER BY relevance DESC LIMIT 50';
+        $sql .= ' ORDER BY relevance DESC LIMIT ' . self::MAX_RESULTS;
 
         $rows = $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAllAssociative();
 
