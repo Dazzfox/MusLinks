@@ -81,6 +81,7 @@
                     </svg>
                     <input type="text" id="search-q-mobile" placeholder="Médecin, avocat, boucher…" value="{{ query }}" autocomplete="off"
                            class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400">
+                    <div id="search-q-mobile-dropdown" class="autocomplete-dropdown hidden absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"></div>
                 </div>
 
                 <div class="relative bg-white/95 rounded-2xl shadow-lg flex items-center px-4">
@@ -95,6 +96,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z"/>
                         </svg>
                     </button>
+                    <div id="search-ville-mobile-dropdown" class="autocomplete-dropdown hidden absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"></div>
                 </div>
 
                 <button type="submit"
@@ -213,6 +215,19 @@
         var acTimer = null;
         var currentPage = 1;
         var hasMoreResults = false;
+        // La barre desktop et les cartes empilées mobile sont deux jeux de champs distincts
+        // dans le DOM (l'un des deux est caché en CSS selon la largeur d'écran) : on les
+        // garde synchronisés pour que doSearch() (qui ne lit que les champs desktop) reflète
+        // toujours ce que l'utilisateur a tapé, qu'il soit sur mobile ou desktop.
+        var Q_FIELDS = ['search-q', 'search-q-mobile'];
+        var VILLE_FIELDS = ['search-ville', 'search-ville-mobile'];
+
+        function setFieldGroup(ids, value) {
+            ids.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = value;
+            });
+        }
 
         function getStars(avg) {
             var html = '<div class="flex items-center gap-0.5">';
@@ -328,7 +343,9 @@
             var input = document.getElementById(inputId);
             var dropdown = document.getElementById(dropdownId);
             if (!input || !dropdown) return;
+            var group = field === 'ville' ? VILLE_FIELDS : Q_FIELDS;
             input.addEventListener('input', function() {
+                setFieldGroup(group, input.value);
                 clearTimeout(acTimer);
                 var val = input.value.trim();
                 if (val.length < 1) { dropdown.classList.add('hidden'); return; }
@@ -348,7 +365,7 @@
                                 btn.style.cssText = 'display:block;width:100%;padding:0.5rem 1rem;text-align:left;font-size:0.875rem;color:#1e293b;background:none;border:none;border-bottom:1px solid #f0fdf4;cursor:pointer;font-family:inherit;';
                                 btn.addEventListener('mousedown', function(e) {
                                     e.preventDefault();
-                                    input.value = field === 'ville' ? s.split(' (')[0] : s;
+                                    setFieldGroup(group, field === 'ville' ? s.split(' (')[0] : s);
                                     dropdown.classList.add('hidden');
                                     doSearch();
                                 });
@@ -486,8 +503,8 @@
         }
 
         function resetSearch() {
-            document.getElementById('search-q').value = '';
-            document.getElementById('search-ville').value = '';
+            setFieldGroup(Q_FIELDS, '');
+            setFieldGroup(VILLE_FIELDS, '');
             currentDomaine = '';
             doSearch();
         }
@@ -511,7 +528,7 @@
                         btn.classList.remove('animate-spin');
                         var cp = d.address.postcode || '';
                         var city = d.address.city || d.address.town || d.address.village || '';
-                        document.getElementById('search-ville').value = cp || city;
+                        setFieldGroup(VILLE_FIELDS, cp || city);
                         doSearch();
                     });
             }, function() { btn.classList.remove('animate-spin'); });
@@ -541,6 +558,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupAutocomplete('search-q', 'search-q-dropdown', 'q');
             setupAutocomplete('search-ville', 'search-ville-dropdown', 'ville');
+            setupAutocomplete('search-q-mobile', 'search-q-mobile-dropdown', 'q');
+            setupAutocomplete('search-ville-mobile', 'search-ville-mobile-dropdown', 'ville');
 
             // Sync desktop select bar → filtre
             var bar = document.getElementById('pays-select-bar');
@@ -568,7 +587,7 @@
                                 btn.classList.remove('animate-spin');
                                 var cp = d.address.postcode || '';
                                 var city = d.address.city || d.address.town || d.address.village || '';
-                                document.getElementById('search-ville').value = cp || city;
+                                setFieldGroup(VILLE_FIELDS, cp || city);
                                 doSearch();
                             });
                     }, function() { btn.classList.remove('animate-spin'); });
