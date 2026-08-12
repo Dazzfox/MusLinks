@@ -54,8 +54,8 @@ class HomeController extends AbstractController
             if ($email && $nom && $message) {
                 try {
                     $mail = (new TemplatedEmail())
-                        ->from('noreply@muslinks.fr')
-                        ->to('contact@muslinks.fr')
+                        ->from($_ENV['MAILER_FROM_ADDRESS'])
+                        ->to($_ENV['MAILER_CONTACT_ADDRESS'])
                         ->replyTo($email)
                         ->subject('[Contact] ' . $sujet . ' — ' . $nom)
                         ->html('<p><strong>De :</strong> ' . $nom . ' &lt;' . $email . '&gt;</p>'

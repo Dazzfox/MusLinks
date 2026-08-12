@@ -171,7 +171,7 @@ class ProfessionalController extends AbstractController
             $link = $this->generateUrl('app_verify_email', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $email = (new TemplatedEmail())
-                ->from('noreply@muslinks.fr')
+                ->from($_ENV['MAILER_FROM_ADDRESS'])
                 ->to($professional->getEmail())
                 ->subject('Confirmez votre adresse email — MusLinks')
                 ->htmlTemplate('emails/verification.html.twig')
@@ -188,7 +188,7 @@ class ProfessionalController extends AbstractController
     {
         try {
             $email = (new TemplatedEmail())
-                ->from('noreply@muslinks.fr')
+                ->from($_ENV['MAILER_FROM_ADDRESS'])
                 ->to($professional->getEmail())
                 ->subject('🎉 Votre fiche MusLinks est en ligne — ' . $professional->getNomSociete())
                 ->htmlTemplate('emails/bienvenue.html.twig')

@@ -24,7 +24,7 @@ class DonController extends AbstractController
         $stripeSecretKey = $_ENV['STRIPE_SECRET_KEY'] ?? '';
 
         if (!preg_match('/^sk_(test|live)_/', $stripeSecretKey)) {
-            $this->addFlash('danger', 'Stripe non configuré. Contactez-nous à contact@muslinks.fr.');
+            $this->addFlash('danger', 'Stripe non configuré. Contactez-nous à ' . $_ENV['MAILER_CONTACT_ADDRESS'] . '.');
             return $this->redirectToRoute('app_don');
         }
 

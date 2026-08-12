@@ -51,7 +51,7 @@ class EspaceProController extends AbstractController
                 $link = $this->generateUrl('pro_verify', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
                 $mail = (new TemplatedEmail())
-                    ->from(new Address('noreply@muslinks.fr', 'MusLinks'))
+                    ->from(new Address($_ENV['MAILER_FROM_ADDRESS'], 'MusLinks'))
                     ->to(new Address($pro->getEmail(), $pro->getPrenomResponsable() . ' ' . $pro->getNomResponsable()))
                     ->subject('Votre lien de connexion MusLinks')
                     ->htmlTemplate('emails/magic_link.html.twig')

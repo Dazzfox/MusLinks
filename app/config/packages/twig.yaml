@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        contact_email: '%env(MAILER_CONTACT_ADDRESS)%'
+        noreply_email: '%env(MAILER_FROM_ADDRESS)%'
 
 when@test:
     twig:
