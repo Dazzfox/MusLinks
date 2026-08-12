@@ -85,7 +85,87 @@ class ProfessionalRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function searchJson(string $query = '', string $ville = '', string $genre = '', string $type = '', string $pays = ''): array
+    private const SEARCH_ALLOWED_TRI = ['nomSociete', 'ville', 'profession', 'starsAverage', 'createdAt'];
+
+    public function searchJson(
+        string $query = '',
+        string $ville = '',
+        string $genre = '',
+        string $type = '',
+        string $pays = '',
+        string $tri = 'createdAt',
+        string $domaine = ''
+    ): array {
+        $tri = in_array($tri, self::SEARCH_ALLOWED_TRI, true) ? $tri : 'createdAt';
+        $words = $query !== '' ? $this->extractSearchWords($query) : [];
+        // Code postal complet (31100) : on essaie d'abord la ville exacte, puis en repli le
+        // département (31) si rien n'y est trouvé — plutôt que de renvoyer "0 résultat" sec.
+        $villeCandidates = $this->villeCandidates($ville);
+
+        if ($words !== []) {
+            $exact = implode(' ', array_map(fn (string $w) => '+' . $w, $words));
+
+            foreach ($villeCandidates as $candidateVille) {
+                $ids = $this->runFulltextQuery($exact, $candidateVille, $genre, $type, $pays, $domaine);
+                if ($ids !== []) {
+                    return $this->hydrateInRelevanceOrder($ids, $tri);
+                }
+            }
+
+            // Le(s) mot(s) exact(s) existent-ils ailleurs dans le fichier, tous filtres mis à
+            // part ? Si oui, un vrai résultat a juste été éliminé par la ville/le domaine/etc.
+            // (au-delà du repli département déjà tenté ci-dessus) : "0 résultat" est la bonne
+            // réponse, on n'élargit pas plus loin. Sans ce garde-fou, élargir (au préfixe puis à
+            // une recherche par sous-chaîne) remonterait des faux positifs non liés — ex.
+            // "médecin" élargi matcherait "médecine" dans la description d'une pharmacie, alors
+            // qu'il n'y a simplement aucun médecin dans le secteur demandé. On n'élargit que si
+            // le mot est réellement absent du fichier (ex. recherche tapée en partie, "bouch").
+            if ($this->runFulltextQuery($exact, '', '', '', '', '') !== []) {
+                return [];
+            }
+
+            $prefix = implode(' ', array_map(fn (string $w) => '+' . $w . '*', $words));
+            foreach ($villeCandidates as $candidateVille) {
+                $ids = $this->runFulltextQuery($prefix, $candidateVille, $genre, $type, $pays, $domaine);
+                if ($ids !== []) {
+                    return $this->hydrateInRelevanceOrder($ids, $tri);
+                }
+            }
+
+            // Le mot est resté introuvable même en préfixe FULLTEXT (typiquement trop court pour
+            // l'index — MySQL ignore par défaut les mots de moins de 3 caractères). On tombe sur
+            // la recherche par sous-chaîne classique ci-dessous, seul filet de sécurité restant
+            // pour ce cas précis (le garde-fou ci-dessus a déjà écarté le cas "filtré à zéro").
+        }
+
+        foreach ($villeCandidates as $i => $candidateVille) {
+            $results = $this->likeSearch($query, $candidateVille, $genre, $type, $pays, $domaine, $tri);
+            $isLastCandidate = $i === array_key_last($villeCandidates);
+            if ($results !== [] || $isLastCandidate) {
+                return $results;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Code postal à 5 chiffres → [code exact, département (2 premiers chiffres)] pour permettre
+     * un repli "aucun résultat à cette adresse précise, mais peut-être dans le département".
+     * Toute autre saisie (ville en toutes lettres, département déjà saisi, vide…) : inchangée.
+     */
+    private function villeCandidates(string $ville): array
+    {
+        if (!preg_match('/^\d{5}$/', $ville)) {
+            return [$ville];
+        }
+
+        $departement = substr($ville, 0, 2);
+
+        return [$ville, $departement];
+    }
+
+    private function likeSearch(string $query, string $ville, string $genre, string $type, string $pays, string $domaine, string $tri): array
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.statut = :statut')
@@ -127,7 +207,102 @@ class ProfessionalRepository extends ServiceEntityRepository
                ->setParameter('pays', $pays);
         }
 
+        if ($domaine !== '') {
+            $qb->andWhere('p.domaineActivite = :domaine')
+               ->setParameter('domaine', $domaine);
+        }
+
+        $direction = $tri === 'starsAverage' ? 'DESC' : 'ASC';
+        $qb->orderBy('p.' . $tri, $direction);
+
         return $qb->setMaxResults(50)->getQuery()->getResult();
+    }
+
+    /**
+     * Nettoie et découpe la requête en mots utilisables pour le mode booléen FULLTEXT (mots de 2
+     * caractères ou plus, opérateurs booléens MySQL neutralisés).
+     */
+    private function extractSearchWords(string $query): array
+    {
+        $words = preg_split('/\s+/', trim($this->normalize($query)), -1, PREG_SPLIT_NO_EMPTY);
+
+        return array_values(array_filter(array_map(
+            fn (string $w) => preg_replace('/[+\-<>()~*"@]+/', '', $w),
+            $words
+        ), fn (string $w) => mb_strlen($w) >= 2));
+    }
+
+    private function runFulltextQuery(string $boolean, string $ville, string $genre, string $type, string $pays, string $domaine): array
+    {
+        $match = 'MATCH(nom_societe, profession, domaine_activite, description) AGAINST (:q IN BOOLEAN MODE)';
+        $sql = "SELECT id, $match AS relevance FROM professional
+                WHERE statut = :statut AND is_visible = 1 AND $match > 0";
+        $params = ['q' => $boolean, 'statut' => Professional::STATUT_ACTIF];
+
+        if ($ville !== '') {
+            $sql .= ' AND type = :physType';
+            $params['physType'] = Professional::TYPE_PHYSIQUE;
+
+            if (preg_match('/^\d{2,5}$/', $ville)) {
+                $sql .= ' AND code_postal LIKE :villeParam';
+                $params['villeParam'] = $ville . '%';
+            } else {
+                $sql .= ' AND (ville LIKE :villeParam OR code_postal LIKE :villeParam)';
+                $params['villeParam'] = '%' . $ville . '%';
+            }
+        }
+
+        if ($genre !== '') {
+            $sql .= ' AND genre = :genre';
+            $params['genre'] = $genre;
+        }
+
+        if ($type !== '') {
+            $sql .= ' AND type = :type';
+            $params['type'] = $type;
+        }
+
+        if ($pays !== '') {
+            $sql .= ' AND pays = :pays';
+            $params['pays'] = $pays;
+        }
+
+        if ($domaine !== '') {
+            $sql .= ' AND domaine_activite = :domaine';
+            $params['domaine'] = $domaine;
+        }
+
+        $sql .= ' ORDER BY relevance DESC LIMIT 50';
+
+        $rows = $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAllAssociative();
+
+        return array_map('intval', array_column($rows, 'id'));
+    }
+
+    /**
+     * Réhydrate les entités par ID en conservant l'ordre de pertinence — sauf si l'utilisateur a
+     * explicitement choisi un autre tri (note, nom, ville), auquel cas cet ordre prime.
+     */
+    private function hydrateInRelevanceOrder(array $ids, string $tri): array
+    {
+        $professionals = $this->createQueryBuilder('p')
+            ->andWhere('p.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        if (in_array($tri, ['starsAverage', 'nomSociete', 'ville'], true)) {
+            $getter = 'get' . ucfirst($tri);
+            $direction = $tri === 'starsAverage' ? -1 : 1;
+            usort($professionals, fn (Professional $a, Professional $b) => $direction * ($a->$getter() <=> $b->$getter()));
+
+            return $professionals;
+        }
+
+        $relevanceOrder = array_flip($ids);
+        usort($professionals, fn (Professional $a, Professional $b) => $relevanceOrder[$a->getId()] <=> $relevanceOrder[$b->getId()]);
+
+        return $professionals;
     }
 
     public function findKeywordSuggestions(string $q, int $limit = 8): array

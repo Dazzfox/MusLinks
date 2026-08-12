@@ -8,7 +8,10 @@
 <section class="relative overflow-hidden flex items-center" style="background: linear-gradient(135deg, #064E3B 0%, #059669 100%); min-height: 80vh;">
     {% include 'components/_islamic_pattern.html.twig' with {patternId: 'star8-hero'} %}
 
-    {# ── Bande drapeaux ── #}
+    {# ── Bande drapeaux ──
+       Lancement France uniquement : bannière multi-pays mise en réserve pour ne pas
+       promettre une couverture internationale pas encore réelle. À restaurer avec le
+       reste du multi-pays (cf. ProfessionalType::pays).
     <div class="absolute top-0 left-0 right-0 z-10 bg-black/5 backdrop-blur-[2px] border-b border-white/5 py-2.5">
         <div class="flex items-center justify-center gap-4 flex-wrap">
             <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="France">🇫🇷</span>
@@ -22,6 +25,7 @@
             <span class="inline-flex items-center justify-center w-9 h-7 text-3xl" title="Liban">🇱🇧</span>
         </div>
     </div>
+    #}
 
     <div class="relative w-full max-w-4xl mx-auto px-4 sm:px-6 py-24 text-center">
         <h1 class="font-serif text-3xl sm:text-4xl lg:text-6xl font-bold text-white leading-tight mb-4">
@@ -44,16 +48,8 @@
                 <div class="flex items-center pl-6 pr-4 border-r border-slate-100 rounded-l-full shrink-0">
                     <select name="pays" id="home-pays"
                             class="outline-none text-slate-700 text-sm bg-transparent cursor-pointer appearance-none font-medium">
-                        <option value="">🌍 Tous</option>
+                        {# Lancement France uniquement — autres pays en réserve, cf. ProfessionalType::pays #}
                         <option value="FR">🇫🇷 France</option>
-                        <option value="BE">🇧🇪 Belgique</option>
-                        <option value="CA">🇨🇦 Canada</option>
-                        <option value="CH">🇨🇭 Suisse</option>
-                        <option value="LU">🇱🇺 Luxembourg</option>
-                        <option value="MA">🇲🇦 Maroc</option>
-                        <option value="DZ">🇩🇿 Algérie</option>
-                        <option value="TN">🇹🇳 Tunisie</option>
-                        <option value="LB">🇱🇧 Liban</option>
                     </select>
                 </div>
 
@@ -103,18 +99,10 @@
 
                 <div class="bg-white/95 rounded-2xl shadow-lg flex items-center px-4">
                     <span class="text-lg mr-2 flex-shrink-0">🌍</span>
-                    <select name="pays"
+                    <select name="pays" id="home-pays-mobile"
                             class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent cursor-pointer">
-                        <option value="">Tous les pays</option>
+                        {# Lancement France uniquement — autres pays en réserve, cf. ProfessionalType::pays #}
                         <option value="FR">🇫🇷 France</option>
-                        <option value="BE">🇧🇪 Belgique</option>
-                        <option value="CA">🇨🇦 Canada</option>
-                        <option value="CH">🇨🇭 Suisse</option>
-                        <option value="LU">🇱🇺 Luxembourg</option>
-                        <option value="MA">🇲🇦 Maroc</option>
-                        <option value="DZ">🇩🇿 Algérie</option>
-                        <option value="TN">🇹🇳 Tunisie</option>
-                        <option value="LB">🇱🇧 Liban</option>
                     </select>
                 </div>
 
@@ -122,7 +110,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 flex-shrink-0 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" name="q" placeholder="Médecin, avocat, boucher…" autocomplete="off"
+                    <input type="text" name="q" id="home-q-mobile" placeholder="Médecin, avocat, boucher…" autocomplete="off"
                            class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400">
                 </div>
 
@@ -130,7 +118,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 flex-shrink-0 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     </svg>
-                    <input type="text" name="ville" placeholder="Paris, Bruxelles, Montréal…" autocomplete="off"
+                    <input type="text" name="ville" id="home-ville-mobile" placeholder="Paris, Bruxelles, Montréal…" autocomplete="off"
                            class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent placeholder-slate-400">
                     <button type="button" onclick="geolocate('home-ville')"
                             class="text-emerald-500 hover:text-emerald-700 ml-2 flex-shrink-0 transition-colors" title="Ma position">
@@ -152,11 +140,15 @@
 
         </form>
 
+        {# Mêmes catégories que les chips de la page recherche (cohérence) : passent par le filtre
+           "domaine" plutôt qu'une recherche par mot-clé, donc jamais de page vide tant qu'un
+           professionnel existe dans la catégorie — contrairement à une recherche par métier
+           précis qui peut retomber à 0 résultat selon les fiches déjà inscrites. #}
         <div class="mt-6 flex flex-wrap justify-center gap-2">
-            {% for chip in ['Médecin', 'Avocat', 'Boucher', 'Plombier', 'Architecte', 'Comptable', 'Épicerie', 'Mosquée', 'Vêtements', 'Cosmétiques'] %}
-                <a href="{{ path('app_search', {q: chip}) }}"
+            {% for cat in ['Santé', 'Droit & Conseil', 'Alimentation', 'Bâtiment & Travaux', 'Informatique & Tech', 'Beauté & Bien-être', 'Éducation & Formation', 'Finance & Assurance', 'Immobilier', 'Mosquée & Religion'] %}
+                <a href="{{ path('app_search', {domaine: cat}) }}"
                    class="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 text-xs px-3 py-1.5 rounded-full transition-all">
-                    {{ chip }}
+                    {{ cat }}
                 </a>
             {% endfor %}
         </div>
@@ -238,7 +230,12 @@
                         .then(function(d) {
                             var cp = d.address.postcode || '';
                             var city = d.address.city || d.address.town || d.address.village || '';
-                            document.getElementById(inputId).value = cp || city;
+                            var val = cp || city;
+                            document.getElementById(inputId).value = val;
+                            // Variante desktop/mobile du même champ (voir sync plus bas) : on la
+                            // remplit aussi directement, un .value JS ne déclenche pas 'input'.
+                            var mirror = document.getElementById(inputId + '-mobile');
+                            if (mirror) mirror.value = val;
                         })
                         .catch(function() { if (btn) btn.classList.remove('animate-spin'); });
                 },
@@ -310,10 +307,28 @@
             var detected = (supported.includes(lang) ? lang : null)
                 || tzMap[Intl.DateTimeFormat().resolvedOptions().timeZone]
                 || '';
-            if (detected) {
-                var sel = document.getElementById('home-pays');
-                if (sel) sel.value = detected;
+
+            // pays/q/ville existent chacun en double dans le DOM (variante desktop + mobile,
+            // seul l'affichage CSS change selon la largeur d'écran) : les deux exemplaires sont
+            // soumis au submit du formulaire, donc ils doivent toujours rester synchronisés,
+            // sinon celui resté sur sa valeur par défaut écrase le choix de l'utilisateur.
+            function syncTwins(idA, idB, eventName) {
+                var a = document.getElementById(idA);
+                var b = document.getElementById(idB);
+                if (!a || !b) return;
+                a.addEventListener(eventName, function() { b.value = this.value; });
+                b.addEventListener(eventName, function() { a.value = this.value; });
             }
+
+            var paysDesktop = document.getElementById('home-pays');
+            var paysMobile  = document.getElementById('home-pays-mobile');
+            if (detected) {
+                if (paysDesktop) paysDesktop.value = detected;
+                if (paysMobile)  paysMobile.value = detected;
+            }
+            syncTwins('home-pays', 'home-pays-mobile', 'change');
+            syncTwins('home-q', 'home-q-mobile', 'input');
+            syncTwins('home-ville', 'home-ville-mobile', 'input');
         });
 
         // Counter animation

@@ -34,13 +34,15 @@ class ApiController extends AbstractController
     #[Route('/search', name: 'api_search', methods: ['GET'])]
     public function search(Request $request, ProfessionalRepository $repo): JsonResponse
     {
-        $query = trim($request->query->get('q', ''));
-        $ville = trim($request->query->get('ville', ''));
-        $genre = trim($request->query->get('genre', ''));
-        $type  = trim($request->query->get('type', ''));
-        $pays  = trim($request->query->get('pays', ''));
+        $query   = trim($request->query->get('q', ''));
+        $ville   = trim($request->query->get('ville', ''));
+        $genre   = trim($request->query->get('genre', ''));
+        $type    = trim($request->query->get('type', ''));
+        $pays    = trim($request->query->get('pays', ''));
+        $domaine = trim($request->query->get('domaine', ''));
+        $tri     = trim($request->query->get('tri', 'createdAt'));
 
-        $professionals = $repo->searchJson($query, $ville, $genre, $type, $pays);
+        $professionals = $repo->searchJson($query, $ville, $genre, $type, $pays, $tri, $domaine);
 
         $results = array_map(fn($p) => [
             'id'             => $p->getId(),

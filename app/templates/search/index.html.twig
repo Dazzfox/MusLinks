@@ -18,15 +18,8 @@
                     <select id="pays-select-bar"
                             class="outline-none text-slate-700 text-sm bg-transparent cursor-pointer appearance-none font-medium">
                         <option value="">🌍 Tous</option>
+                        {# Lancement France uniquement — autres pays en réserve, cf. ProfessionalType::pays #}
                         <option value="FR">🇫🇷 France</option>
-                        <option value="BE">🇧🇪 Belgique</option>
-                        <option value="CA">🇨🇦 Canada</option>
-                        <option value="CH">🇨🇭 Suisse</option>
-                        <option value="LU">🇱🇺 Luxembourg</option>
-                        <option value="MA">🇲🇦 Maroc</option>
-                        <option value="DZ">🇩🇿 Algérie</option>
-                        <option value="TN">🇹🇳 Tunisie</option>
-                        <option value="LB">🇱🇧 Liban</option>
                     </select>
                 </div>
 
@@ -77,15 +70,8 @@
                     <select id="pays-select-bar-mobile"
                             class="flex-1 py-3.5 outline-none text-slate-800 text-sm bg-transparent cursor-pointer">
                         <option value="">Tous les pays</option>
+                        {# Lancement France uniquement — autres pays en réserve, cf. ProfessionalType::pays #}
                         <option value="FR">🇫🇷 France</option>
-                        <option value="BE">🇧🇪 Belgique</option>
-                        <option value="CA">🇨🇦 Canada</option>
-                        <option value="CH">🇨🇭 Suisse</option>
-                        <option value="LU">🇱🇺 Luxembourg</option>
-                        <option value="MA">🇲🇦 Maroc</option>
-                        <option value="DZ">🇩🇿 Algérie</option>
-                        <option value="TN">🇹🇳 Tunisie</option>
-                        <option value="LB">🇱🇧 Liban</option>
                     </select>
                 </div>
 
@@ -155,7 +141,8 @@
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
                     <span class="text-xs text-slate-400 font-medium whitespace-nowrap">Pays :</span>
                     <button onclick="filterPays('')" id="pays-chip-tous" class="pays-chip whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium bg-emerald-600 text-white transition-colors">Tous</button>
-                    {% for code, flag in {'FR':'🇫🇷','BE':'🇧🇪','CA':'🇨🇦','CH':'🇨🇭','LU':'🇱🇺','MA':'🇲🇦','DZ':'🇩🇿','TN':'🇹🇳','LB':'🇱🇧'} %}
+                    {# Lancement France uniquement — autres pays en réserve, cf. ProfessionalType::pays #}
+                    {% for code, flag in {'FR':'🇫🇷'} %}
                         <button onclick="filterPays('{{ code }}')" id="pays-chip-{{ code }}"
                                 class="pays-chip whitespace-nowrap px-3 py-1 rounded-full text-sm bg-white border border-slate-200 hover:border-emerald-400 transition-colors">
                             {{ flag }}
@@ -388,11 +375,18 @@
             doSearch();
         }
 
+        function gridColsClass(count) {
+            if (count <= 1) return 'grid-cols-1';
+            if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
+            if (count === 3) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+            return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+        }
+
         function doSearch() {
             var q = document.getElementById('search-q').value;
             var ville = document.getElementById('search-ville').value;
             var sort = document.getElementById('sort-select').value;
-            var params = new URLSearchParams({ q: q, ville: ville, domaine: currentDomaine, genre: currentGenre, type: currentType, pays: currentPays });
+            var params = new URLSearchParams({ q: q, ville: ville, domaine: currentDomaine, genre: currentGenre, type: currentType, pays: currentPays, tri: sort });
             var container = document.getElementById('results-container');
             var empty = document.getElementById('empty-state');
             var count = document.getElementById('results-count');
@@ -415,8 +409,12 @@
                         return;
                     }
 
+                    // Le nombre de colonnes s'adapte au nombre de résultats : avec un seul
+                    // résultat par ex., pas la peine de réserver 4 colonnes vides sur grand écran.
+                    container.className = 'grid gap-5 ' + gridColsClass(results.length);
+
                     container.innerHTML = results.map(function(p, i) {
-                        return '<div style="animation:fadeInUp .3s ease both;animation-delay:' + (i * 30) + 'ms">' + renderCard(p) + '</div>';
+                        return '<div class="w-full max-w-md" style="animation:fadeInUp .3s ease both;animation-delay:' + (i * 30) + 'ms">' + renderCard(p) + '</div>';
                     }).join('');
                 })
                 .catch(function() {

@@ -6,13 +6,22 @@ use App\Repository\ProfessionalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProfessionalRepository::class)]
+#[ORM\Index(name: 'idx_professional_statut_visible', columns: ['statut', 'is_visible'])]
+#[ORM\Index(
+    name: 'idx_professional_fulltext',
+    columns: ['nom_societe', 'profession', 'domaine_activite', 'description'],
+    flags: ['fulltext']
+)]
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
+#[UniqueEntity(fields: ['email'], message: 'Cette adresse email est déjà utilisée par une autre fiche.')]
+#[UniqueEntity(fields: ['siret'], message: 'Ce numéro SIRET est déjà enregistré sur MusLinks.')]
 class Professional
 {
     public const STATUT_EN_ATTENTE   = 'EN_ATTENTE';

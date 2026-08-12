@@ -23,9 +23,7 @@ class ReviewType extends AbstractType
                     'class' => 'form-input',
                 ],
             ])
-            ->add('note', HiddenType::class, [
-                'attr' => ['id' => 'review-note-input'],
-            ])
+            ->add('note', HiddenType::class)
             ->add('commentaire', TextareaType::class, [
                 'label' => 'Votre avis',
                 'attr' => [

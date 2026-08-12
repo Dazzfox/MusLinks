@@ -22,16 +22,19 @@ class ProfessionalType extends AbstractType
         $builder
             ->add('pays', ChoiceType::class, [
                 'label' => 'Pays *',
+                // Lancement France uniquement (vérification SIRET only pour FR — voir
+                // ProfessionalController::inscription()). Autres pays en réserve, à
+                // réactiver ici quand une vérification équivalente existera pour eux :
+                // '🇧🇪 Belgique'   => 'BE',
+                // '🇨🇦 Canada'     => 'CA',
+                // '🇨🇭 Suisse'     => 'CH',
+                // '🇱🇺 Luxembourg' => 'LU',
+                // '🇲🇦 Maroc'      => 'MA',
+                // '🇩🇿 Algérie'    => 'DZ',
+                // '🇹🇳 Tunisie'    => 'TN',
+                // '🇱🇧 Liban'      => 'LB',
                 'choices' => [
-                    '🇫🇷 France'     => 'FR',
-                    '🇧🇪 Belgique'   => 'BE',
-                    '🇨🇦 Canada'     => 'CA',
-                    '🇨🇭 Suisse'     => 'CH',
-                    '🇱🇺 Luxembourg' => 'LU',
-                    '🇲🇦 Maroc'      => 'MA',
-                    '🇩🇿 Algérie'    => 'DZ',
-                    '🇹🇳 Tunisie'    => 'TN',
-                    '🇱🇧 Liban'      => 'LB',
+                    '🇫🇷 France' => 'FR',
                 ],
                 'data' => 'FR',
                 'attr' => ['class' => 'form-input'],
