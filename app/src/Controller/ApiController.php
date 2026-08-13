@@ -129,9 +129,13 @@ class ApiController extends AbstractController
         $tri     = trim($request->query->get('tri', 'createdAt'));
         $page    = max(1, (int) $request->query->get('page', 1));
 
-        $allMatches = $repo->searchJson($query, $ville, $genre, $type, $pays, $tri, $domaine);
-        $total = count($allMatches);
-        $professionals = array_slice($allMatches, ($page - 1) * self::RESULTS_PER_PAGE, self::RESULTS_PER_PAGE);
+        $search = $repo->searchJson(
+            $query, $ville, $genre, $type, $pays, $tri, $domaine,
+            offset: ($page - 1) * self::RESULTS_PER_PAGE,
+            limit: self::RESULTS_PER_PAGE,
+        );
+        $professionals = $search['results'];
+        $total = $search['total'];
 
         $results = array_map(fn($p) => [
             'id'             => $p->getId(),

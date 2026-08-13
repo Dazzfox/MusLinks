@@ -87,10 +87,13 @@ class ProfessionalRepository extends ServiceEntityRepository
 
     private const SEARCH_ALLOWED_TRI = ['nomSociete', 'ville', 'profession', 'starsAverage', 'createdAt'];
 
-    // Plafond de sécurité sur ce que la requête SQL ramène en mémoire — la pagination
-    // réelle (page/perPage) se fait ensuite côté contrôleur sur ce tableau déjà chargé.
-    private const MAX_RESULTS = 200;
-
+    /**
+     * Pagination réelle au niveau SQL (LIMIT/OFFSET), sans plafond artificiel sur le total
+     * joignable — sur une grosse base, un ancien plafond fixe (ex. 200) rendrait tout ce qui
+     * dépasse littéralement injoignable en recherche sans filtre précis. Retourne
+     * ['results' => Professional[], 'total' => int] : `total` porte sur l'ensemble des
+     * résultats correspondants (pas seulement la page), pour calculer "Voir plus" côté API.
+     */
     public function searchJson(
         string $query = '',
         string $ville = '',
@@ -98,7 +101,9 @@ class ProfessionalRepository extends ServiceEntityRepository
         string $type = '',
         string $pays = '',
         string $tri = 'createdAt',
-        string $domaine = ''
+        string $domaine = '',
+        int $offset = 0,
+        int $limit = 16
     ): array {
         $tri = in_array($tri, self::SEARCH_ALLOWED_TRI, true) ? $tri : 'createdAt';
         $words = $query !== '' ? $this->extractSearchWords($query) : [];
@@ -110,9 +115,11 @@ class ProfessionalRepository extends ServiceEntityRepository
             $exact = implode(' ', array_map(fn (string $w) => '+' . $w, $words));
 
             foreach ($villeCandidates as $candidateVille) {
-                $ids = $this->runFulltextQuery($exact, $candidateVille, $genre, $type, $pays, $domaine);
-                if ($ids !== []) {
-                    return $this->hydrateInRelevanceOrder($ids, $tri);
+                $total = $this->countFulltextQuery($exact, $candidateVille, $genre, $type, $pays, $domaine);
+                if ($total > 0) {
+                    $ids = $this->runFulltextQuery($exact, $candidateVille, $genre, $type, $pays, $domaine, $tri, $offset, $limit);
+
+                    return ['results' => $this->hydrateInGivenOrder($ids), 'total' => $total];
                 }
             }
 
@@ -124,15 +131,17 @@ class ProfessionalRepository extends ServiceEntityRepository
             // "médecin" élargi matcherait "médecine" dans la description d'une pharmacie, alors
             // qu'il n'y a simplement aucun médecin dans le secteur demandé. On n'élargit que si
             // le mot est réellement absent du fichier (ex. recherche tapée en partie, "bouch").
-            if ($this->runFulltextQuery($exact, '', '', '', '', '') !== []) {
-                return [];
+            if ($this->countFulltextQuery($exact, '', '', '', '', '') > 0) {
+                return ['results' => [], 'total' => 0];
             }
 
             $prefix = implode(' ', array_map(fn (string $w) => '+' . $w . '*', $words));
             foreach ($villeCandidates as $candidateVille) {
-                $ids = $this->runFulltextQuery($prefix, $candidateVille, $genre, $type, $pays, $domaine);
-                if ($ids !== []) {
-                    return $this->hydrateInRelevanceOrder($ids, $tri);
+                $total = $this->countFulltextQuery($prefix, $candidateVille, $genre, $type, $pays, $domaine);
+                if ($total > 0) {
+                    $ids = $this->runFulltextQuery($prefix, $candidateVille, $genre, $type, $pays, $domaine, $tri, $offset, $limit);
+
+                    return ['results' => $this->hydrateInGivenOrder($ids), 'total' => $total];
                 }
             }
 
@@ -143,14 +152,16 @@ class ProfessionalRepository extends ServiceEntityRepository
         }
 
         foreach ($villeCandidates as $i => $candidateVille) {
-            $results = $this->likeSearch($query, $candidateVille, $genre, $type, $pays, $domaine, $tri);
+            $total = $this->likeSearchCount($query, $candidateVille, $genre, $type, $pays, $domaine);
             $isLastCandidate = $i === array_key_last($villeCandidates);
-            if ($results !== [] || $isLastCandidate) {
-                return $results;
+            if ($total > 0 || $isLastCandidate) {
+                $results = $total > 0 ? $this->likeSearch($query, $candidateVille, $genre, $type, $pays, $domaine, $tri, $offset, $limit) : [];
+
+                return ['results' => $results, 'total' => $total];
             }
         }
 
-        return [];
+        return ['results' => [], 'total' => 0];
     }
 
     /**
@@ -169,7 +180,7 @@ class ProfessionalRepository extends ServiceEntityRepository
         return [$ville, $departement];
     }
 
-    private function likeSearch(string $query, string $ville, string $genre, string $type, string $pays, string $domaine, string $tri): array
+    private function buildLikeQueryBuilder(string $query, string $ville, string $genre, string $type, string $pays, string $domaine): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.statut = :statut')
@@ -216,10 +227,27 @@ class ProfessionalRepository extends ServiceEntityRepository
                ->setParameter('domaine', $domaine);
         }
 
-        $direction = $tri === 'starsAverage' ? 'DESC' : 'ASC';
-        $qb->orderBy('p.' . $tri, $direction);
+        return $qb;
+    }
 
-        return $qb->setMaxResults(self::MAX_RESULTS)->getQuery()->getResult();
+    private function likeSearchCount(string $query, string $ville, string $genre, string $type, string $pays, string $domaine): int
+    {
+        return (int) $this->buildLikeQueryBuilder($query, $ville, $genre, $type, $pays, $domaine)
+            ->select('COUNT(p.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function likeSearch(string $query, string $ville, string $genre, string $type, string $pays, string $domaine, string $tri, int $offset, int $limit): array
+    {
+        $direction = $tri === 'starsAverage' ? 'DESC' : 'ASC';
+
+        return $this->buildLikeQueryBuilder($query, $ville, $genre, $type, $pays, $domaine)
+            ->orderBy('p.' . $tri, $direction)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -236,11 +264,11 @@ class ProfessionalRepository extends ServiceEntityRepository
         ), fn (string $w) => mb_strlen($w) >= 2));
     }
 
-    private function runFulltextQuery(string $boolean, string $ville, string $genre, string $type, string $pays, string $domaine): array
+    /** @return array{0: string, 1: array<string, string>} */
+    private function buildFulltextWhere(string $boolean, string $ville, string $genre, string $type, string $pays, string $domaine): array
     {
         $match = 'MATCH(nom_societe, profession, domaine_activite, description) AGAINST (:q IN BOOLEAN MODE)';
-        $sql = "SELECT id, $match AS relevance FROM professional
-                WHERE statut = :statut AND is_visible = 1 AND $match > 0";
+        $sql = "FROM professional WHERE statut = :statut AND is_visible = 1 AND $match > 0";
         $params = ['q' => $boolean, 'statut' => Professional::STATUT_ACTIF];
 
         if ($ville !== '') {
@@ -276,35 +304,66 @@ class ProfessionalRepository extends ServiceEntityRepository
             $params['domaine'] = $domaine;
         }
 
-        $sql .= ' ORDER BY relevance DESC LIMIT ' . self::MAX_RESULTS;
+        return [$sql, $params];
+    }
 
-        $rows = $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchAllAssociative();
+    /**
+     * Tri SQL pour les résultats FULLTEXT — reprend la pertinence par défaut (valeur "createdAt",
+     * pas de sens de re-trier un résultat par mots-clés par date), sinon la même colonne que
+     * l'utilisateur a choisie ailleurs dans l'UI.
+     */
+    private function fulltextOrderBy(string $tri): string
+    {
+        return match ($tri) {
+            'starsAverage' => 'ORDER BY stars_average DESC',
+            'nomSociete'   => 'ORDER BY nom_societe ASC',
+            'ville'        => 'ORDER BY ville ASC',
+            'profession'   => 'ORDER BY profession ASC',
+            default        => 'ORDER BY relevance DESC',
+        };
+    }
+
+    private function countFulltextQuery(string $boolean, string $ville, string $genre, string $type, string $pays, string $domaine): int
+    {
+        [$where, $params] = $this->buildFulltextWhere($boolean, $ville, $genre, $type, $pays, $domaine);
+        $sql = "SELECT COUNT(*) AS c $where";
+
+        return (int) $this->getEntityManager()->getConnection()->executeQuery($sql, $params)->fetchOne();
+    }
+
+    private function runFulltextQuery(string $boolean, string $ville, string $genre, string $type, string $pays, string $domaine, string $tri, int $offset, int $limit): array
+    {
+        [$where, $params] = $this->buildFulltextWhere($boolean, $ville, $genre, $type, $pays, $domaine);
+        $match = 'MATCH(nom_societe, profession, domaine_activite, description) AGAINST (:q IN BOOLEAN MODE)';
+        $sql = "SELECT id, $match AS relevance $where " . $this->fulltextOrderBy($tri) . ' LIMIT :limit OFFSET :offset';
+        $params['limit'] = $limit;
+        $params['offset'] = $offset;
+        $types = ['limit' => \Doctrine\DBAL\ParameterType::INTEGER, 'offset' => \Doctrine\DBAL\ParameterType::INTEGER];
+
+        $rows = $this->getEntityManager()->getConnection()->executeQuery($sql, $params, $types)->fetchAllAssociative();
 
         return array_map('intval', array_column($rows, 'id'));
     }
 
     /**
-     * Réhydrate les entités par ID en conservant l'ordre de pertinence — sauf si l'utilisateur a
-     * explicitement choisi un autre tri (note, nom, ville), auquel cas cet ordre prime.
+     * Réhydrate les entités par ID en conservant l'ordre déjà déterminé côté SQL (pertinence
+     * ou tri explicite, LIMIT/OFFSET déjà appliqués) — WHERE id IN (...) ne garantit pas cet
+     * ordre par lui-même, d'où le remappage par position.
      */
-    private function hydrateInRelevanceOrder(array $ids, string $tri): array
+    private function hydrateInGivenOrder(array $ids): array
     {
+        if ($ids === []) {
+            return [];
+        }
+
         $professionals = $this->createQueryBuilder('p')
             ->andWhere('p.id IN (:ids)')
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
 
-        if (in_array($tri, ['starsAverage', 'nomSociete', 'ville'], true)) {
-            $getter = 'get' . ucfirst($tri);
-            $direction = $tri === 'starsAverage' ? -1 : 1;
-            usort($professionals, fn (Professional $a, Professional $b) => $direction * ($a->$getter() <=> $b->$getter()));
-
-            return $professionals;
-        }
-
-        $relevanceOrder = array_flip($ids);
-        usort($professionals, fn (Professional $a, Professional $b) => $relevanceOrder[$a->getId()] <=> $relevanceOrder[$b->getId()]);
+        $order = array_flip($ids);
+        usort($professionals, fn (Professional $a, Professional $b) => $order[$a->getId()] <=> $order[$b->getId()]);
 
         return $professionals;
     }

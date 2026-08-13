@@ -60,10 +60,11 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->createPro(['nomSociete' => 'Boucherie El Amine', 'domaineActivite' => 'Alimentation', 'profession' => 'Boucher']);
         $this->em->flush();
 
-        $results = $this->repo->searchJson(query: 'boucher');
+        $search = $this->repo->searchJson(query: 'boucher');
 
-        $this->assertCount(1, $results);
-        $this->assertSame('Boucherie El Amine', $results[0]->getNomSociete());
+        $this->assertSame(1, $search['total']);
+        $this->assertCount(1, $search['results']);
+        $this->assertSame('Boucherie El Amine', $search['results'][0]->getNomSociete());
     }
 
     public function testSearchIsCaseAndAccentInsensitive(): void
@@ -71,9 +72,9 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->createPro(['nomSociete' => 'Cabinet Médical', 'profession' => 'Médecin généraliste']);
         $this->em->flush();
 
-        $results = $this->repo->searchJson(query: 'MEDECIN');
+        $search = $this->repo->searchJson(query: 'MEDECIN');
 
-        $this->assertCount(1, $results);
+        $this->assertCount(1, $search['results']);
     }
 
     public function testFalsePositiveGuardRail(): void
@@ -100,9 +101,9 @@ class ProfessionalRepositoryTest extends KernelTestCase
         ]);
         $this->em->flush();
 
-        $results = $this->repo->searchJson(query: 'médecin', ville: '31000');
+        $search = $this->repo->searchJson(query: 'médecin', ville: '31000');
 
-        $this->assertCount(0, $results, 'La pharmacie ne doit pas remonter sur une recherche "médecin" filtrée sur une ville sans médecin réel.');
+        $this->assertSame(0, $search['total'], 'La pharmacie ne doit pas remonter sur une recherche "médecin" filtrée sur une ville sans médecin réel.');
     }
 
     public function testWidensToPrefixWhenWordAbsentEverywhere(): void
@@ -113,9 +114,9 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->createPro(['nomSociete' => 'Boucherie El Amine', 'domaineActivite' => 'Alimentation', 'profession' => 'Boucher']);
         $this->em->flush();
 
-        $results = $this->repo->searchJson(query: 'bouch');
+        $search = $this->repo->searchJson(query: 'bouch');
 
-        $this->assertCount(1, $results);
+        $this->assertCount(1, $search['results']);
     }
 
     public function testDepartmentFallbackWhenExactPostalCodeEmpty(): void
@@ -130,10 +131,10 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->em->flush();
 
         // Recherché à 31000 (aucune fiche exactement là) : doit replier sur le département 31.
-        $results = $this->repo->searchJson(query: 'plombier', ville: '31000');
+        $search = $this->repo->searchJson(query: 'plombier', ville: '31000');
 
-        $this->assertCount(1, $results);
-        $this->assertSame('Plomberie Haddad', $results[0]->getNomSociete());
+        $this->assertCount(1, $search['results']);
+        $this->assertSame('Plomberie Haddad', $search['results'][0]->getNomSociete());
     }
 
     public function testDomaineFilterAlone(): void
@@ -142,10 +143,10 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->createPro(['nomSociete' => 'Boucherie Test', 'domaineActivite' => 'Alimentation', 'profession' => 'Boucher']);
         $this->em->flush();
 
-        $results = $this->repo->searchJson(domaine: 'Mosquée & Religion');
+        $search = $this->repo->searchJson(domaine: 'Mosquée & Religion');
 
-        $this->assertCount(1, $results);
-        $this->assertSame('Mosquée Test', $results[0]->getNomSociete());
+        $this->assertCount(1, $search['results']);
+        $this->assertSame('Mosquée Test', $search['results'][0]->getNomSociete());
     }
 
     public function testInvisibleOrInactiveProfessionalsAreExcluded(): void
@@ -155,10 +156,48 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $this->createPro(['nomSociete' => 'Fiche active', 'isVisible' => true, 'statut' => Professional::STATUT_ACTIF]);
         $this->em->flush();
 
-        $results = $this->repo->searchJson();
+        $search = $this->repo->searchJson();
 
-        $this->assertCount(1, $results);
-        $this->assertSame('Fiche active', $results[0]->getNomSociete());
+        $this->assertCount(1, $search['results']);
+        $this->assertSame('Fiche active', $search['results'][0]->getNomSociete());
+    }
+
+    public function testPaginationReturnsCorrectTotalAndSlices(): void
+    {
+        // La base n'est plus plafonnée à un maximum arbitraire de résultats joignables —
+        // avec 25 fiches réelles, le total doit refléter les 25, pas être tronqué.
+        for ($i = 1; $i <= 25; $i++) {
+            $this->createPro(['nomSociete' => 'Boucherie ' . $i, 'domaineActivite' => 'Alimentation', 'profession' => 'Boucher']);
+        }
+        $this->em->flush();
+
+        $page1 = $this->repo->searchJson(domaine: 'Alimentation', offset: 0, limit: 16);
+        $this->assertSame(25, $page1['total']);
+        $this->assertCount(16, $page1['results']);
+
+        $page2 = $this->repo->searchJson(domaine: 'Alimentation', offset: 16, limit: 16);
+        $this->assertSame(25, $page2['total']);
+        $this->assertCount(9, $page2['results']);
+
+        // Les deux pages ne doivent jamais se chevaucher.
+        $idsPage1 = array_map(fn (Professional $p) => $p->getId(), $page1['results']);
+        $idsPage2 = array_map(fn (Professional $p) => $p->getId(), $page2['results']);
+        $this->assertEmpty(array_intersect($idsPage1, $idsPage2));
+    }
+
+    public function testPaginationWorksOnFulltextPathToo(): void
+    {
+        for ($i = 1; $i <= 20; $i++) {
+            $this->createPro(['nomSociete' => 'Boucherie Halal ' . $i, 'domaineActivite' => 'Alimentation', 'profession' => 'Boucher halal']);
+        }
+        $this->em->flush();
+
+        $page1 = $this->repo->searchJson(query: 'boucher', offset: 0, limit: 16);
+        $this->assertSame(20, $page1['total']);
+        $this->assertCount(16, $page1['results']);
+
+        $page2 = $this->repo->searchJson(query: 'boucher', offset: 16, limit: 16);
+        $this->assertCount(4, $page2['results']);
     }
 
     protected function tearDown(): void
