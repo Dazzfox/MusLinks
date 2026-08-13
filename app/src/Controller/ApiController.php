@@ -8,12 +8,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/api')]
 class ApiController extends AbstractController
 {
+    private const GEO_API_URL = 'https://geo.api.gouv.fr/communes';
+    private const GEO_API_URL_DEPARTEMENTS = 'https://geo.api.gouv.fr/departements/';
+
     #[Route('/suggestions', name: 'api_suggestions', methods: ['GET'])]
-    public function suggestions(Request $request, ProfessionalRepository $repo): JsonResponse
+    public function suggestions(Request $request, ProfessionalRepository $repo, HttpClientInterface $httpClient): JsonResponse
     {
         $q = trim($request->query->get('q', ''));
         $ville = trim($request->query->get('ville', ''));
@@ -25,10 +29,90 @@ class ApiController extends AbstractController
         }
 
         if (strlen($ville) >= 2) {
-            $data['villes'] = $repo->findVilleSuggestions($ville);
+            $data['villes'] = $this->communeSuggestions($ville, $httpClient);
         }
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * Suggestions de villes sur toute la France (pas seulement celles où un professionnel
+     * est déjà inscrit) via l'API officielle du gouvernement — gratuite, sans clé, données
+     * à jour de toutes les communes françaises.
+     */
+    private function communeSuggestions(string $ville, HttpClientInterface $httpClient): array
+    {
+        try {
+            if (preg_match('/^\d{2,5}$/', $ville)) {
+                return $this->communeSuggestionsByPostalPrefix($ville, $httpClient);
+            }
+
+            $response = $httpClient->request('GET', self::GEO_API_URL, [
+                'query'   => ['nom' => $ville, 'boost' => 'population', 'limit' => 8, 'fields' => 'nom,codesPostaux'],
+                'timeout' => 4,
+            ]);
+
+            return array_map(
+                fn (array $c) => $c['nom'] . ' (' . ($c['codesPostaux'][0] ?? '') . ')',
+                $response->toArray(false)
+            );
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    private function communeSuggestionsByPostalPrefix(string $prefix, HttpClientInterface $httpClient): array
+    {
+        $departement = substr($prefix, 0, 2);
+
+        // /communes?codeDepartement=.. est plafonné à 200 résultats et peut donc rater de
+        // grandes villes selon l'ordre renvoyé (ex. Toulouse absente pour le 31, qui compte
+        // ~586 communes) — /departements/{code}/communes renvoie la liste complète.
+        $response = $httpClient->request('GET', self::GEO_API_URL_DEPARTEMENTS . $departement . '/communes', [
+            'query'   => ['fields' => 'nom,codesPostaux,population'],
+            'timeout' => 4,
+        ]);
+
+        $communes = $response->toArray(false);
+
+        // codeDepartement seul (ex. "31") : tout le département, trié par population.
+        // Préfixe plus précis (ex. "310") : uniquement les communes dont un code postal
+        // correspond réellement à ce préfixe.
+        if (strlen($prefix) > 2) {
+            $communes = array_filter(
+                $communes,
+                fn (array $c) => $this->hasMatchingPostalCode($c['codesPostaux'] ?? [], $prefix)
+            );
+        }
+
+        usort($communes, fn (array $a, array $b) => ($b['population'] ?? 0) <=> ($a['population'] ?? 0));
+
+        return array_map(
+            fn (array $c) => $c['nom'] . ' (' . $this->matchingPostalCode($c['codesPostaux'] ?? [], $prefix) . ')',
+            array_slice($communes, 0, 8)
+        );
+    }
+
+    private function hasMatchingPostalCode(array $codesPostaux, string $prefix): bool
+    {
+        foreach ($codesPostaux as $cp) {
+            if (str_starts_with($cp, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function matchingPostalCode(array $codesPostaux, string $prefix): string
+    {
+        foreach ($codesPostaux as $cp) {
+            if (str_starts_with($cp, $prefix)) {
+                return $cp;
+            }
+        }
+
+        return $codesPostaux[0] ?? '';
     }
 
     private const RESULTS_PER_PAGE = 16;

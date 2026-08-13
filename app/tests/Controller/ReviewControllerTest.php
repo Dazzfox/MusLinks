@@ -19,8 +19,13 @@ class ReviewControllerTest extends WebTestCase
         // createClient() doit démarrer le kernel en premier, avant tout getContainer().
         $this->client = static::createClient();
         $this->em = self::getContainer()->get('doctrine')->getManager();
-        $this->em->getConnection()->executeStatement('DELETE FROM review');
-        $this->em->getConnection()->executeStatement('DELETE FROM professional');
+        // TRUNCATE (pas DELETE) : évite de désynchroniser l'index FULLTEXT InnoDB de
+        // professional au fil des runs — cf. ProfessionalRepositoryTest pour le détail.
+        $connection = $this->em->getConnection();
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+        $connection->executeStatement('TRUNCATE TABLE review');
+        $connection->executeStatement('TRUNCATE TABLE professional');
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1');
     }
 
     private function createVisiblePro(): Professional

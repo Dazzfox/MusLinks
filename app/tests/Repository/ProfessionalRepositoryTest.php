@@ -20,8 +20,15 @@ class ProfessionalRepositoryTest extends KernelTestCase
         $repo = $this->em->getRepository(Professional::class);
         $this->repo = $repo;
 
-        // Table dédiée aux tests, on repart toujours d'une base vide pour des assertions fiables.
-        $this->em->getConnection()->executeStatement('DELETE FROM professional');
+        // TRUNCATE (pas DELETE) : un DELETE répété désynchronise l'index FULLTEXT InnoDB au
+        // fil des tests (les recherches finissent par ne plus rien matcher du tout, y compris
+        // des mots pourtant présents) — bug réel rencontré en écrivant ces tests. TRUNCATE
+        // reconstruit proprement la table et son index. FK désactivées le temps de l'opération
+        // (review référence professional).
+        $connection = $this->em->getConnection();
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+        $connection->executeStatement('TRUNCATE TABLE professional');
+        $connection->executeStatement('SET FOREIGN_KEY_CHECKS=1');
     }
 
     private function createPro(array $overrides = []): Professional
