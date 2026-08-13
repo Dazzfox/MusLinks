@@ -53,6 +53,19 @@ class ImportSireneCommand extends Command
 
     private const PAR_VILLE = 3;
 
+    // Un boucher n'est jamais garanti halal (aucune donnée ouverte ne le certifie, d'où la
+    // mention de transparence déjà ajoutée à la description) — mais un commerce dont le nom
+    // affiche explicitement le porc, ou se revendique d'une autre pratique alimentaire
+    // religieuse (casher), n'a lui-même pas sa place mis en avant sur un annuaire pensé pour
+    // la communauté musulmane. Cas réels rencontrés : "Cul de Cochon", "Salaison Torrilhon"
+    // (charcuterie, quasi systématiquement à base de porc en France même sans le mot "porc"
+    // littéral), "L'Écuyer Tranchant Judaïque" (boucherie casher) — aucun n'était écarté par
+    // le filtre initial, plus restreint.
+    private const MOTS_EXCLUS = [
+        'cochon', 'porc', 'porcin', 'jambon', 'lard', 'saucisson', 'charcuterie', 'salaison',
+        'judaique', 'judaïque', 'casher', 'kasher', 'kosher',
+    ];
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly EntityManagerInterface $em,
@@ -67,6 +80,7 @@ class ImportSireneCommand extends Command
         $created = 0;
         $skipped = 0;
         $errors = 0;
+        $exclus = 0;
         $batch = 0;
         // Un même SIRET peut apparaître dans plusieurs résultats avant le prochain flush() —
         // la vérification en base seule ne voit pas encore ce qui est persist() mais pas flush().
@@ -109,6 +123,11 @@ class ImportSireneCommand extends Command
 
                     if (!$siret || !$nom || !$adresse || !$cp || !$commune) {
                         continue; // fiche incomplète côté registre, on ne devine rien
+                    }
+
+                    if ($halalNote && $this->nomHorsSujetHalal($nom)) {
+                        $exclus++;
+                        continue;
                     }
 
                     $email = sprintf('%s@a-verifier.muslinks.fr', $siret);
@@ -168,8 +187,27 @@ class ImportSireneCommand extends Command
             $this->em->flush();
         }
 
-        $io->success(sprintf('%d fiches créées, %d doublons ignorés, %d erreurs API.', $created, $skipped, $errors));
+        $io->success(sprintf(
+            '%d fiches créées, %d doublons ignorés, %d écartées (nom évoquant le porc ou une autre pratique religieuse), %d erreurs API.',
+            $created,
+            $skipped,
+            $exclus,
+            $errors
+        ));
 
         return Command::SUCCESS;
+    }
+
+    private function nomHorsSujetHalal(string $nom): bool
+    {
+        $normalized = mb_strtolower($nom);
+
+        foreach (self::MOTS_EXCLUS as $mot) {
+            if (str_contains($normalized, $mot)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
