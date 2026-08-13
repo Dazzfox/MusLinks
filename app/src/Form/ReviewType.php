@@ -18,6 +18,10 @@ class ReviewType extends AbstractType
             ->add('auteur', TextType::class, [
                 'label' => 'Votre prénom ou initiales',
                 'required' => false,
+                // Sans ça, un champ laissé vide transmet null à Review::setAuteur(string),
+                // qui n'accepte pas null (TypeError → 500) — Review::$auteur n'est jamais
+                // censé être nul, seulement vide (le contrôleur retombe ensuite sur "Anonyme").
+                'empty_data' => '',
                 'attr' => [
                     'placeholder' => 'Anonyme',
                     'class' => 'form-input',
