@@ -7,7 +7,9 @@ use App\Entity\Review;
 use App\Repository\ProfessionalRepository;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +18,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin')]
 class AdminController extends AbstractController
 {
+    // Protection anti-brute-force sur le PIN (6 chiffres, 1M de combinaisons) : le site
+    // tourne sans surveillance permanente, donc pas question de compter sur une détection
+    // manuelle d'attaque.
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOCKOUT_SECONDS = 900; // 15 minutes
+
     private function requireAdmin(Request $request): ?RedirectResponse
     {
         $session = $request->getSession();
@@ -44,7 +52,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/login', name: 'admin_login', methods: ['GET', 'POST'])]
-    public function login(Request $request): Response
+    public function login(Request $request, #[Autowire(service: 'cache.app')] CacheItemPoolInterface $cache): Response
     {
         if ($request->getSession()->get('admin_logged')) {
             return $this->redirectToRoute('admin_dashboard');
@@ -53,22 +61,39 @@ class AdminController extends AbstractController
         $error = null;
 
         if ($request->isMethod('POST')) {
-            $digits = $request->request->all('digits') ?? [];
-            $pin = implode('', array_map('strval', $digits));
+            $ip = $request->getClientIp() ?? 'unknown';
+            $attemptsItem = $cache->getItem('admin_login_attempts_' . md5($ip));
+            $attempts = $attemptsItem->isHit() ? $attemptsItem->get() : 0;
 
-            if (strlen($pin) !== 6 || !ctype_digit($pin)) {
-                $error = 'Veuillez saisir un code PIN à 6 chiffres.';
+            if ($attempts >= self::MAX_LOGIN_ATTEMPTS) {
+                $error = 'Trop de tentatives. Réessayez dans 15 minutes.';
             } else {
-                $pinHash = hash('sha256', $pin);
-                $expectedHash = $_ENV['ADMIN_PIN_HASH'] ?? '';
+                $digits = $request->request->all('digits') ?? [];
+                $pin = implode('', array_map('strval', $digits));
 
-                if ($pinHash === $expectedHash) {
-                    $session = $request->getSession();
-                    $session->set('admin_logged', true);
-                    $session->set('admin_logged_at', time());
-                    return $this->redirectToRoute('admin_dashboard');
+                if (strlen($pin) !== 6 || !ctype_digit($pin)) {
+                    $error = 'Veuillez saisir un code PIN à 6 chiffres.';
+                } else {
+                    $pinHash = hash('sha256', $pin);
+                    $expectedHash = $_ENV['ADMIN_PIN_HASH'] ?? '';
+
+                    if ($pinHash === $expectedHash) {
+                        $cache->deleteItem($attemptsItem->getKey());
+                        $session = $request->getSession();
+                        $session->set('admin_logged', true);
+                        $session->set('admin_logged_at', time());
+                        return $this->redirectToRoute('admin_dashboard');
+                    }
+
+                    $attempts++;
+                    $attemptsItem->set($attempts)->expiresAfter(self::LOCKOUT_SECONDS);
+                    $cache->save($attemptsItem);
+
+                    $remaining = self::MAX_LOGIN_ATTEMPTS - $attempts;
+                    $error = $remaining > 0
+                        ? sprintf('Code PIN incorrect. %d tentative(s) restante(s) avant blocage temporaire de 15 minutes.', $remaining)
+                        : 'Trop de tentatives. Réessayez dans 15 minutes.';
                 }
-                $error = 'Code PIN incorrect. Réessayez.';
             }
         }
 
